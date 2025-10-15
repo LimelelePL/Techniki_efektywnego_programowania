@@ -1,0 +1,10 @@
+//
+// Created by Dominik on 15.10.2025.
+//
+
+#ifndef LABORATORIUM1_CONSTANS_VALUES_H
+#define LABORATORIUM1_CONSTANS_VALUES_H
+
+const static int VALUE_OF_NUMBER_TO_FILL = 34;
+
+#endif //LABORATORIUM1_CONSTANS_VALUES_H
