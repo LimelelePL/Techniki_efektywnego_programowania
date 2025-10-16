@@ -1,6 +1,7 @@
 #include <iostream>
 
-#include "constans_values.h"
+#include "constansValuesFor123.h"
+#include "Table.h"
 using namespace std;
 
 //zadanie 1 --------------------------------------------------------
@@ -27,8 +28,8 @@ void allocTableFill34(int size) {
 //zadanie 2 --------------------------------------------
 /*zakladajac ze uzycie referencji jest niemozliwe w parametrze mielibysmy *** */
 bool allocTable2Dim(int ***table, int sizeX, int sizeY) {
-
-    if (sizeX<= 0|| sizeY<=0 ||
+//zabezpieczamy rozmiar tablicy i przed podwójną alokacją
+    if (table == 0 || *table != 0 || sizeX<= 0|| sizeY<=0 ||
         sizeX>TOO_LARGE_VALUE || sizeY>TOO_LARGE_VALUE){
         cout<<"niepoprawne rozmiary tablicy \n"; // komunikat o niepoprawnych rozmiarach
         return false;
@@ -49,12 +50,12 @@ bool allocTable2Dim(int ***table, int sizeX, int sizeY) {
 //skoro jest zakaz używania referencji
 // zadanie 3
 // skoro jest zakaz używania referencji
-bool deallocTable2Dim(int ***table, int sizeX, int sizeY) {
+bool deallocTable2Dim(int ***table, int sizeX) {
 
     // Sprawdzamy czy wskaźnik na tablicę istnieje
     if (table == 0 || *table == 0 ||
-        sizeX <= 0 || sizeY <= 0 ||
-        sizeX > TOO_LARGE_VALUE || sizeY > TOO_LARGE_VALUE) {
+        sizeX <= 0 ||
+        sizeX > TOO_LARGE_VALUE ) {
         return false;
         }
 
@@ -73,6 +74,7 @@ bool deallocTable2Dim(int ***table, int sizeX, int sizeY) {
     return true;
 }
 
+
 int main(){
     cout<<"ZADANIE 1 \n";
     allocTableFill34(1);
@@ -87,8 +89,32 @@ int main(){
 
 
     cout<<"ZADANIE 3 \n";
-    cout<< deallocTable2Dim(&tab1, 3, 4) <<"\n";
-    cout<< deallocTable2Dim(&tab1, -1, 4) <<"\n";
+    cout<< deallocTable2Dim(&tab1, 3) <<"\n";
+    //cout<< deallocTable2Dim(tab1, -1) <<"\n";
+
+    cout<<"ZADANIE 3 \n";
+    //obiekt stworzony przy pomocy konstruktora domyślnego
+    Table defaultTable;
+    //obiekt stworzony przy pomocy konstruktora z parametrami
+    Table parametrizedTable("parametryzowanyTablica", 10);
+    // kopiowanie tablicy
+    Table copiedTable(parametrizedTable);
+    // kopiowanie za pomoca metody clone
+    Table *pCloneMethodTable = parametrizedTable.pClone();
+    //usuniecie tablicy
+    delete pCloneMethodTable;
+
+    Table *pNextClonedMethodTable = parametrizedTable.pClone();
+
+
+    cout<<"zmieniony size -> metoda setNewSize: " << parametrizedTable.setNewSize(15) <<"\n";
+    cout<<"zmieniona nazwa -> metoda setName: " << "\n";
+    parametrizedTable.setName("newName");
+
+    defaultTable.modTab(defaultTable, 20);
+    pNextClonedMethodTable->modTab(parametrizedTable, 20 );
+
+
 
     return 0;
 }
