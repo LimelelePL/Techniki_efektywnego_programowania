@@ -38,28 +38,57 @@ bool allocTable2Dim(int ***table, int sizeX, int sizeY) {
     *table = new int*[sizeX]; //alokujemy dynamicznie tablice jednowymiarową wskaznikow na wskaznik
                             //. jej elementy będą wskazywac na "podtablice"
 
-    //inicjalizacja wskaźników tablicy na pierwsze elementy tablic w osi Y
-    for (int i = 0; i<sizeX; i++) {
+    for (int i = 0; i < sizeX; i++) {
         (*table)[i] = new int[sizeY];
     }
 
-    return true;
+  return true;
 }
 
 // zadanie 3
+//skoro jest zakaz używania referencji
+// zadanie 3
+// skoro jest zakaz używania referencji
+bool deallocTable2Dim(int ***table, int sizeX, int sizeY) {
 
-int main() {
+    // Sprawdzamy czy wskaźnik na tablicę istnieje
+    if (table == 0 || *table == 0 ||
+        sizeX <= 0 || sizeY <= 0 ||
+        sizeX > TOO_LARGE_VALUE || sizeY > TOO_LARGE_VALUE) {
+        return false;
+        }
 
+    // Usuwamy każdą podtablicę (oś Y)
+    for (int i = 0; i < sizeX; i++) {
+        delete[] (*table)[i];
+    }
+
+    // Usuwamy tablicę wskaźników (oś X)
+    delete[] *table;
+
+    // Zerujemy wskaźnik (C++98 -> 0)
+    *table = 0;
+
+    cout << "usunieto" << endl;
+    return true;
+}
+
+int main(){
     cout<<"ZADANIE 1 \n";
     allocTableFill34(1);
     allocTableFill34(4);
     allocTableFill34(-1);
 
     cout<<"ZADANIE 2 \n";
-    int **tab;
-    cout<< allocTable2Dim(&tab, 3, 4) <<"\n";
-    cout<< allocTable2Dim(&tab, -1, 4) <<"\n";
+    int **tab1;
+    int **tab2;
+    cout<< allocTable2Dim(&tab1, 3, 4) <<"\n";
+    cout<< allocTable2Dim(&tab2, -1, 4) <<"\n";
 
+
+    cout<<"ZADANIE 3 \n";
+    cout<< deallocTable2Dim(&tab1, 3, 4) <<"\n";
+    cout<< deallocTable2Dim(&tab1, -1, 4) <<"\n";
 
     return 0;
 }
