@@ -30,9 +30,9 @@ Table::Table(const Table& pOther) {
 }
 
 Table::~Table() {
-    if (this->pTable !=0) {
+    if (this->pTable !=nullptr) {
         delete [] this->pTable;
-        this->pTable = 0;
+        this->pTable = nullptr;
         cout << "usuwam " << this->name << "\n";
     }
 }
@@ -48,7 +48,7 @@ Table *Table::pClone() {
 
 bool Table::setNewSize(int tabLength) {
     if (tabLength <= this->arrayLength && tabLength>0) {
-        if (this->pTable != 0) {
+        if (this->pTable !=nullptr) {
             delete[] this->pTable;
         }
         this->arrayLength = tabLength;
@@ -59,9 +59,11 @@ bool Table::setNewSize(int tabLength) {
 }
 
 void Table::modTab(Table *pcTab, int iNewSize) { //modyfikacja bierzącego obiektu
+    cout<<"METODA MOD TAB -> wskaźnik \n";
     pcTab->setNewSize(iNewSize);
 }
 void Table::modTab(Table cTab, int iNewSize) { //zostanie utworzona kopia
+    cout<<"METODA MOD TAB -> kopia obiektu \n";
     cTab.setNewSize(iNewSize);
 }
 

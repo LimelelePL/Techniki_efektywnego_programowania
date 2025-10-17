@@ -21,7 +21,7 @@ void allocTableFill34(int size) {
     for (int i = 0; i<size; i++) { //wypisanie tablicy
         cout<<arr[i]<<" ";
     }
-
+    cout<<endl;
     delete [] arr; //zwolnienie nieużywanej juz pamieci
 }
 
@@ -29,7 +29,8 @@ void allocTableFill34(int size) {
 /*zakladajac ze uzycie referencji jest niemozliwe w parametrze mielibysmy *** */
 bool allocTable2Dim(int ***table, int sizeX, int sizeY) {
 //zabezpieczamy rozmiar tablicy i przed podwójną alokacją
-    if (table == 0 || *table != 0 || sizeX<= 0|| sizeY<=0 ||
+    if (table == nullptr || *table != nullptr
+        || sizeX<= 0|| sizeY<=0 ||
         sizeX>TOO_LARGE_VALUE || sizeY>TOO_LARGE_VALUE){
         cout<<"niepoprawne rozmiary tablicy \n"; // komunikat o niepoprawnych rozmiarach
         return false;
@@ -53,7 +54,7 @@ bool allocTable2Dim(int ***table, int sizeX, int sizeY) {
 bool deallocTable2Dim(int ***table, int sizeX) {
 
     // Sprawdzamy czy wskaźnik na tablicę istnieje
-    if (table == 0 || *table == 0 ||
+    if (table == nullptr || *table == nullptr ||
         sizeX <= 0 ||
         sizeX > TOO_LARGE_VALUE ) {
         return false;
@@ -68,7 +69,7 @@ bool deallocTable2Dim(int ***table, int sizeX) {
     delete[] *table;
 
     // Zerujemy wskaźnik (C++98 -> 0)
-    *table = 0;
+    *table = nullptr;
 
     cout << "usunieto" << endl;
     return true;
@@ -77,22 +78,21 @@ bool deallocTable2Dim(int ***table, int sizeX) {
 
 int main(){
     cout<<"ZADANIE 1 \n";
-    allocTableFill34(1);
     allocTableFill34(4);
-    allocTableFill34(-1);
+    //allocTableFill34(-1);
 
-    cout<<"ZADANIE 2 \n";
-    int **tab1;
-    int **tab2;
+    cout<<"ZADANIE 2 --------------------------------------------------------\n";
+    int **tab1 = nullptr;
+    int **tab2 = nullptr;
     cout<< allocTable2Dim(&tab1, 3, 4) <<"\n";
     cout<< allocTable2Dim(&tab2, -1, 4) <<"\n";
 
 
-    cout<<"ZADANIE 3 \n";
+    cout<<"ZADANIE 3 ----------------------------------------------------\n";
     cout<< deallocTable2Dim(&tab1, 3) <<"\n";
     //cout<< deallocTable2Dim(tab1, -1) <<"\n";
 
-    cout<<"ZADANIE 3 \n";
+    cout<<"ZADANIE 4 --------------------------------------------------------\n";
     //obiekt stworzony przy pomocy konstruktora domyślnego
     Table defaultTable;
     //obiekt stworzony przy pomocy konstruktora z parametrami
@@ -113,8 +113,7 @@ int main(){
 
     defaultTable.modTab(defaultTable, 20);
     pNextClonedMethodTable->modTab(parametrizedTable, 20 );
-
-
+    delete pNextClonedMethodTable;
 
     return 0;
 }

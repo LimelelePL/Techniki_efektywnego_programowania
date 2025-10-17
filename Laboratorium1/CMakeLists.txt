@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.22)
 project(Laboratorium1)
 
-set(CMAKE_CXX_STANDARD 98)
+set(CMAKE_CXX_STANDARD 11)
 
-add_executable(
-        Laboratorium1 zadanie123.cpp
-        constansValuesFor123.h
+add_executable(Laboratorium1
+        zadanie123.cpp
         Table.cpp
-        Table.h)
+)
