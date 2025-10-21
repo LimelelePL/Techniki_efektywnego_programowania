@@ -68,6 +68,7 @@ bool Table::setNewSize(int newTableLen) {
     if (array == nullptr) return false;
     if (newTableLen <= 0 || newTableLen >= TOO_LARGE_LENGTH) return false;
 
+    //tablica pomocnicza do której będziemy kopiować elementy
     int *newArray = new int[newTableLen];
     int elementsToCopy = (newTableLen<length)? newTableLen : length;
 
@@ -79,8 +80,10 @@ bool Table::setNewSize(int newTableLen) {
         newArray[i] = array[i];
     }
 
+    //usuwamy starą tablice
     delete[] array;
 
+    // ustawiamy wskaźnik na tablice o nowej dlugosci
     array = newArray;
     length = newTableLen;
 
@@ -96,15 +99,13 @@ Table *Table::pClone() {
     return new Table(*this);
 }
 
-void Table::modTab(Table *pTab, int newSize) {
-    if (pTab == nullptr) {
-        cout << "Niepoprawny wskaźnik na tablicę!\n";
-        return;
-    }
-    pTab->setNewSize(newSize);
+void Table::display() {
+    if (array == nullptr) return;
+    cout << "[";
+    for (int i = 0; i<length; i++)
+        cout<< array[i] << ", ";
+    cout << "]";
+    cout<<endl<<endl;
 }
 
-void Table::modTab(Table tab, int newSize) {
 
-    tab.setNewSize(newSize);
-}

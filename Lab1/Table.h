@@ -31,6 +31,7 @@ public:
 
     void modTab(Table *pTab, int newSize);
     void modTab(Table tab, int newSize);
+    void display();
 };
 
 
