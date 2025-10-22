@@ -8,4 +8,5 @@ add_executable(
         main.cpp
         Table.cpp
         Table.h
+        ../modyfikacja/main.cpp
 )

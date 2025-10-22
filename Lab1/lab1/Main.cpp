@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "constansValuesFor123Tasks.h"
+#include "ConstansValuesFor123Tasks.h"
 #include "Table.h"
 using namespace std;
 
@@ -54,24 +54,29 @@ bool allocTable2Dim(int ***pTable, int sizeX, int sizeY) {
 }
 
 // z pytania -> tak funkcja deallocTable2Dim nie potrzebuje parametru sizeX, ponieważ możemy usunąć wskaźniki
-// na tablice będące kolumnami poruszając się tylko po jednowymiarowej tablicy wskaźników na wskaźniki, z tego tez
-// powodu wystarczy tylko wskaźnik na tablice 1d wskaźników
-bool deallocTable2Dim(int **pTable, int sizeX) {
-    if (*pTable == nullptr || sizeX<=0 || sizeX>=TOO_LARGE_VALUE) {
-        cout<<"dealokacja nieudana \n";
+// na tablice będące kolumnami poruszając się tylko po jednowymiarowej tablicy wskaźników na wskaźniki
+bool deallocTable2Dim(int ***pTable, int sizeX) {
+    if (pTable == nullptr || *pTable == nullptr ||
+        sizeX <= 0 || sizeX >= TOO_LARGE_VALUE) {
+        cout << "dealokacja nieudana \n";
         return false;
-    }
+        }
 
-    delete[] *pTable;
+    // usuwamy każdy wiersz osobno
+    for (int i = 0; i < sizeX; i++) {
+        delete [] (*pTable)[i];
+    }
+    // usuwamy tablicę wskaźników
+    delete [] *pTable;
     *pTable = nullptr;
 
-    cout<<"dealokacja udana \n";
+    cout << "dealokacja udana \n";
     return true;
 }
 
 // procedury do zadania 4
 
-void Table::modTab(Table *pTab, int newSize) {
+void modTab(Table *pTab, int newSize) {
     if (pTab == nullptr) {
         cout << "Niepoprawny wskaźnik na tablicę!\n";
         return;
@@ -80,7 +85,7 @@ void Table::modTab(Table *pTab, int newSize) {
 
 }
 
-void Table::modTab(Table tab, int newSize) {
+void modTab(Table tab, int newSize) {
     tab.setNewSize(newSize);
 }
 
@@ -94,7 +99,7 @@ int main() {
     allocTable2Dim(&array2, 5, 3);
 
     cout<<"=================== ZADANIE 3 ====================== \n";
-    deallocTable2Dim(array2, 5);
+    deallocTable2Dim(&array2, 5);
 
     cout<<"=================== ZADANIE 4 ====================== \n";
     cout<<"wywolanie konstruktora bezparametry \n\n";
@@ -118,11 +123,11 @@ int main() {
     Table *t4 = t2.pClone(); // klonowanie
 
     cout<<"modyfikacja przez wskaznik \n\n";
-    t2.modTab(&t2, 3); // modyfikacja przez wskaźnik
+    modTab(&t2, 3); // modyfikacja przez wskaźnik
     t2.display();
 
     cout<<"modyfikacja przez wartosc \n\n";
-    t2.modTab(t2, 6); // modyfikacja przez wartość (nie zmodyfikuje orginalu)
+    modTab(t2, 6); // modyfikacja przez wartość (nie zmodyfikuje orginalu)
     t2.display();
 
     return 0;
