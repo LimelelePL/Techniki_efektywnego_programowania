@@ -204,7 +204,7 @@ Number Number::operator-(const Number &pOther) {
         return res;
     }
 
-    // III -A-B Wtedy wynik -(B+A)
+    // -A-B Wtedy wynik -(B+A)
     if (this->isNegative && !pOther.isNegative) {
         upper.isNegative = false;
         lower.isNegative = false;
@@ -328,7 +328,7 @@ Number Number::operator*(const Number &pOther) {
         int newLen = res.length - first;
         int *pom = new int[newLen];
 
-        for (int k = 0; k < newLen; ++k) {
+        for (int k = 0; k < newLen; k++) {
             pom[k] = res.array[first + k];
         }
 
