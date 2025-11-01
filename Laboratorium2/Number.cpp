@@ -12,7 +12,7 @@ Number::Number() {
     array = new int[length];
     isNegative = false;
 
-    for (int i=0; i<length; i++) {
+    for (int i = 0; i < length; i++) {
         array[i] = DEFAULT_VALUE;
     }
 }
@@ -32,7 +32,7 @@ Number::Number(int length, int initialValue) {
     this->length = length;
     array = new int[length];
 
-    for (int i = 0 ; i< length; i++) {
+    for (int i = 0; i < length; i++) {
         array[i] = initialValue;
     }
 }
@@ -49,7 +49,7 @@ Number::~Number() {
     array = nullptr;
 }
 
-Number& Number::operator=(const int value) {
+Number &Number::operator=(const int value) {
     delete []array;
     int valueCopy = value;
 
@@ -69,8 +69,7 @@ Number& Number::operator=(const int value) {
 // }
 
 //naprawiony bledny operator
-void Number::operator=(const Number &pOther)
-{
+void Number::operator=(const Number &pOther) {
     if (this == &pOther) return;
 
     delete []array;
@@ -99,7 +98,7 @@ std::string Number::toString() {
 
     for (int i = 0; i < length; i++) {
         char c = '0' + array[i];
-        number+=c;
+        number += c;
     }
 
     return number;
@@ -107,11 +106,8 @@ std::string Number::toString() {
 
 
 Number Number::operator+(const Number &pOther) {
-
     // A + (-B)  ==> A - B
     if (this->isNegative != pOther.isNegative) {
-
-
         if (!this->isNegative) {
             Number bModul = pOther;
             bModul.isNegative = false;
@@ -121,7 +117,7 @@ Number Number::operator+(const Number &pOther) {
         else {
             Number aModul = *this;
             aModul.isNegative = false;
-            Number bCopy (pOther);
+            Number bCopy(pOther);
             return bCopy - aModul;
         }
     }
@@ -150,9 +146,9 @@ Number Number::operator+(const Number &pOther) {
             idx2--;
         }
 
-        if (sum >= 10) {
+        if (sum >= BASE) {
             carry = 1;
-            sum = sum - 10;
+            sum = sum - BASE;
         } else {
             carry = 0;
         }
@@ -186,37 +182,34 @@ Number Number::operator+(const Number &pOther) {
 
 
 Number Number::operator-(const Number &pOther) {
-
-    if (this->compareTo(pOther)==0) {
-        return {1,0};
+    if (this->compareTo(pOther) == 0) {
+        return {1, 0};
     }
 
     int len1 = this->length;
     int len2 = pOther.length;
     int initialLength = max(len1, len2);
 
-    Number result (initialLength, 0);
+    Number result(initialLength, 0);
     Number upper(*this);
     Number lower(pOther);
 
     // A - (-B) = A+B
     if (!this->isNegative && pOther.isNegative) {
-
         upper.isNegative = false;
         lower.isNegative = false;
 
-        Number res = upper+lower;
+        Number res = upper + lower;
         res.isNegative = false;
         return res;
     }
 
     // III -A-B Wtedy wynik -(B+A)
     if (this->isNegative && !pOther.isNegative) {
-
         upper.isNegative = false;
         lower.isNegative = false;
 
-        Number res = upper+lower;
+        Number res = upper + lower;
         res.isNegative = true;
         return res;
     }
@@ -243,7 +236,6 @@ Number Number::operator-(const Number &pOther) {
     // I. A-B, gdzie A<B wtedy wynik to -(B-A)
 
     if (this->compareTo(pOther) < 0) {
-
         result.isNegative = true;
 
         upper = pOther;
@@ -253,39 +245,39 @@ Number Number::operator-(const Number &pOther) {
         len2 = this->length;
     }
 
-        if (upper.array == nullptr || lower.array == nullptr) return result;
+    if (upper.array == nullptr || lower.array == nullptr) return result;
 
-        int i = len1-1;
-        int j = len2-1;
-        int it = initialLength-1;
+    int i = len1 - 1;
+    int j = len2 - 1;
+    int it = initialLength - 1;
 
-        while (it>=0) {
-            int difference = 0;
+    while (it >= 0) {
+        int difference = 0;
 
-            if (j>=0) {
-                if ( upper.array[i] >= lower.array[j] ) {
-                    difference = upper.array[i] - lower.array[j];
-                } else {
-                    int borrowIndex = i - 1;
-                    while (borrowIndex >= 0 && upper.array[borrowIndex] == 0) {
-                        upper.array[borrowIndex] = 9;   // po drodze ustawiamy 9
-                        borrowIndex--;
-                    }
-                    if (borrowIndex >= 0) {
-                        upper.array[borrowIndex] -= 1;  // faktyczne pożyczenie
-                        upper.array[i] += 10;  // dodajemy 10 do aktualnej cyfry
-                    }
-                    difference = upper.array[i] - lower.array[j];
-                }
-                j--;
+        if (j >= 0) {
+            if (upper.array[i] >= lower.array[j]) {
+                difference = upper.array[i] - lower.array[j];
             } else {
-                difference = upper.array[i];
+                int borrowIndex = i - 1;
+                while (borrowIndex >= 0 && upper.array[borrowIndex] == 0) {
+                    upper.array[borrowIndex] = BASE - 1; // po drodze ustawiamy 9
+                    borrowIndex--;
+                }
+                if (borrowIndex >= 0) {
+                    upper.array[borrowIndex] -= 1; // faktyczne pożyczenie
+                    upper.array[i] += BASE; // dodajemy 10 do aktualnej cyfry
+                }
+                difference = upper.array[i] - lower.array[j];
             }
-
-            result.array[it] = difference;
-            i--;
-            it--;
+            j--;
+        } else {
+            difference = upper.array[i];
         }
+
+        result.array[it] = difference;
+        i--;
+        it--;
+    }
 
     // gdyby pierwsza liczba byla zerem musimy poprawic wynikowa tablice
     if (result.array[0] == 0 && result.length > 1) {
@@ -297,7 +289,7 @@ Number Number::operator-(const Number &pOther) {
         }
         result = temp;
     }
-        return result;
+    return result;
 }
 
 
@@ -310,20 +302,20 @@ Number Number::operator*(const Number &pOther) {
     int lowerLen = this->length;
     int upperLen = pOther.length;
 
-    Number res(upperLen + lowerLen,0);
+    Number res(upperLen + lowerLen, 0);
     res.isNegative = (this->isNegative != pOther.isNegative);
 
     for (int i = lowerLen - 1; i >= 0; i--) {
         int carry = 0;
         for (int j = upperLen - 1; j >= 0; j--) {
             // pozycja wyniku - koniec tablicy
-            int p = i + j + 1;   // pozycja młodszej cyfry wyniku
+            int p = i + j + 1; // pozycja młodszej cyfry wyniku
             int q = i + j; // pozycja przeniesienia
 
             int mul = array[i] * pOther.array[j] + res.array[p] + carry;
 
-            res.array[p] = mul % 10;
-            carry = mul / 10;
+            res.array[p] = mul % BASE;
+            carry = mul / BASE;
         }
 
         res.array[i] += carry;
@@ -354,7 +346,7 @@ Number Number::operator/(const Number &pOther) {
     Number result(0);
     if (pOther.compareTo(*this) > 0) return result;
     if (pOther.array[0] == 0) {
-        cout<<"dzielenie przez zero";
+        cout << "dzielenie przez zero";
         return Number();
     }
 
@@ -368,13 +360,12 @@ Number Number::operator/(const Number &pOther) {
     divisor.isNegative = false;
 
     for (int i = 0; i < divident.length; i++) {
-
-        Number num = div * Number(10);
+        Number num = div * Number(BASE);
         num = num + Number(divident.array[i]);
 
         while (num.compareTo(divisor) < 0 && i + 1 < divident.length) {
             i++;
-            num = num * Number(10);
+            num = num * Number(BASE);
             num = num + Number(divident.array[i]);
         }
 
@@ -387,14 +378,13 @@ Number Number::operator/(const Number &pOther) {
             temp = temp + Number(1);
         }
 
-        partial = partial * Number(10);
+        partial = partial * Number(BASE);
         partial = partial + temp;
 
         div = num - temp * divisor;
 
-        result = result * Number(10);
+        result = result * Number(BASE);
         result = result + temp;
-
     }
 
     if (this->isNegative != pOther.isNegative)
@@ -404,10 +394,8 @@ Number Number::operator/(const Number &pOther) {
 }
 
 
-
 //porownuje dwie DODATNIE liczby
 int Number::compareTo(const Number &pOther) const {
-
     if (array == nullptr || pOther.array == nullptr) return 0;
 
     // Porównanie po długości – więcej cyfr = większa liczba
@@ -426,8 +414,7 @@ int Number::compareTo(const Number &pOther) const {
 
     // Jeśli wszystkie cyfry równe  liczby równe
     return 0;
-    }
-
+}
 
 
 void Number::printNumber() const {
@@ -444,8 +431,8 @@ void Number::initializeArray(int value) {
     }
 
     for (int i = 0; i < length; i++) {
-        array[length - i - 1] = value % 10;
-        value = value / 10;
+        array[length - i - 1] = value % BASE;
+        value = value / BASE;
     }
 }
 
@@ -456,7 +443,7 @@ int Number::calculateLength(int val) {
     if (val == 0) return 1;
 
     while (val > 0) {
-        val /= 10;
+        val /= BASE;
         len++;
     }
 
@@ -464,7 +451,7 @@ int Number::calculateLength(int val) {
 }
 
 void Number::checkNegative(int &val) {
-    if (val<0) {
+    if (val < 0) {
         isNegative = true;
         val = -val;
     }

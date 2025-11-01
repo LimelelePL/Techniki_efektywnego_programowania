@@ -8,6 +8,8 @@
 
 const static int DEFAULT_LENGTH = 10;
 const static int DEFAULT_VALUE = 1;
+const static int BASE = 10;
+
 
 class Number {
 public:
