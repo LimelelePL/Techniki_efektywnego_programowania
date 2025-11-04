@@ -45,7 +45,7 @@ Number::Number(const Number &pOther) {
 }
 
 Number::~Number() {
-    if (array != nullptr) delete [] array;
+    delete []array;
     array = nullptr;
 }
 
@@ -310,7 +310,6 @@ Number Number::operator*(const Number &pOther) {
         for (int j = upperLen - 1; j >= 0; j--) {
             // pozycja wyniku - koniec tablicy
             int p = i + j + 1; // pozycja młodszej cyfry wyniku
-            int q = i + j; // pozycja przeniesienia
 
             int mul = array[i] * pOther.array[j] + res.array[p] + carry;
 
@@ -343,55 +342,55 @@ Number Number::operator*(const Number &pOther) {
 }
 
 Number Number::operator/(const Number &pOther) {
-    Number result(0);
-    if (pOther.compareTo(*this) > 0) return result;
-    if (pOther.array[0] == 0) {
-        cout << "dzielenie przez zero";
-        return Number();
+    // Sprawdzenie dzielenia przez zero
+    bool isZero = true;
+    for (int i = 0; i < pOther.length; i++)
+        if (pOther.array[i] != 0) isZero = false;
+    if (isZero) {
+        cout << "Dzielenie przez zero!" << endl;
+        return Number(0);
     }
 
-    Number partial(0);
-    Number div(0);
+    // Obsługa znaków
+    bool resultNegative = (this->isNegative != pOther.isNegative);
 
-    Number divident = *this;
-    Number divisor = pOther;
+    Number dividend(*this);
+    dividend.isNegative = false;
 
-    divident.isNegative = false;
+    Number divisor(pOther);
     divisor.isNegative = false;
 
-    for (int i = 0; i < divident.length; i++) {
-        Number num = div * Number(BASE);
-        num = num + Number(divident.array[i]);
+    Number result(dividend.length, 0);
+    Number remainder(0);
 
-        while (num.compareTo(divisor) < 0 && i + 1 < divident.length) {
-            i++;
-            num = num * Number(BASE);
-            num = num + Number(divident.array[i]);
+    for (int i = 0; i < dividend.length; i++) {
+        // Zsuwamy jedną cyfrę
+        remainder = remainder * Number(BASE);
+        remainder = remainder + Number(dividend.array[i]);
+
+        // Szukamy ile razy divisor mieści się w remainder
+        int count = 0;
+        while (remainder.compareTo(divisor) >= 0) {
+            remainder = remainder - divisor;
+            count++;
         }
-
-        Number temp(0);
-        Number it(num);
-
-        // ile razy divisor mieści się w num
-        while (it.compareTo(divisor) >= 0) {
-            it = it - divisor;
-            temp = temp + Number(1);
-        }
-
-        partial = partial * Number(BASE);
-        partial = partial + temp;
-
-        div = num - temp * divisor;
-
-        result = result * Number(BASE);
-        result = result + temp;
+        result.array[i] = count;
     }
 
-    if (this->isNegative != pOther.isNegative)
-        result.isNegative = true;
+    // Usunięcie zer wiodących
+    int first = 0;
+    while (first < result.length - 1 && result.array[first] == 0)
+        first++;
 
-    return result;
+    int newLen = result.length - first;
+    Number trimmed(newLen, 0);
+    for (int i = 0; i < newLen; i++)
+        trimmed.array[i] = result.array[i + first];
+
+    trimmed.isNegative = resultNegative;
+    return trimmed;
 }
+
 
 
 //porownuje dwie DODATNIE liczby

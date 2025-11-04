@@ -5,4 +5,6 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_executable(Laboratorium2 main.cpp
         Number.cpp
-        Number.h)
+        Number.h
+        Base256Number.cpp
+        Base256Number.h)

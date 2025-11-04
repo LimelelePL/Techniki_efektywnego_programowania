@@ -1,15 +1,21 @@
 #include <iostream>
 
+#include "Base256Number.h"
 #include "Number.h"
 using namespace std;
 
 int main() {
-    Number num1(14);
-    Number num2(-190);
+    Number num1(12);
+    Number num2(2);
     Number num3(1);
 
-    Number div1 = num1 / num2;
-    cout<<div1.toString()<<endl;
+    Number res = num1/num2;
+    res.printNumber();
+
+    Base256Number bNum;
+    bNum =  17;
+    cout<<bNum.toHexString();
+
 
     /*m
      *
@@ -27,5 +33,6 @@ int main() {
     num1 = num2;
     num1.printNumber();
     */
+
 
 }
