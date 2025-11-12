@@ -88,10 +88,12 @@ void Tree::print(Node *node) {
 void Tree::join(string formula) {
 }
 
-Tree &Tree::operator=(const Tree &tree) {
+void Tree::operator=(const Tree &tree) {
+    root = tree.root->clone();
 }
 
 Tree Tree::operator+(const Tree &tree) {
+
 }
 
 // rekurencyjnie budujemy nasze drzewo

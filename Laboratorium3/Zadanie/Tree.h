@@ -35,7 +35,7 @@ public:
     void print();
 
 
-    Tree& operator = (const Tree& tree);
+    void operator = (const Tree& tree);
     Tree operator + (const Tree& tree);
 };
 
