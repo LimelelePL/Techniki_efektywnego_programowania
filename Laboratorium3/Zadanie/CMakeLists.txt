@@ -7,4 +7,10 @@ add_executable(Zadanie main.cpp
         Node.cpp
         Node.h
         Tree.cpp
-        Tree.h)
+        Tree.h
+        Parser.cpp
+        Parser.h
+        TypeChecker.cpp
+        TypeChecker.h
+        Interface.cpp
+        Interface.h)

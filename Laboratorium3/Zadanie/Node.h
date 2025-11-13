@@ -9,7 +9,7 @@
 using namespace std;
 
 enum Type {
-    NUMBER, VARIABLE, UNARY_OP, BINARY_OP, TENARY_OP, UNKNOWN, ROOT
+    NUMBER, VARIABLE, UNARY_OP, BINARY_OP, UNKNOWN, ROOT
 };
 
 class Node {

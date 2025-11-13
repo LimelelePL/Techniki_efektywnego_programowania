@@ -8,6 +8,9 @@
 #include <iostream>
 #include <sstream>
 
+#include "Parser.h"
+#include "TypeChecker.h"
+
 Tree::Tree() {
     root = nullptr;
 }
@@ -23,12 +26,9 @@ Tree::~Tree() {
 
 // ==========================================ENTER =============================================
 void Tree::enter(string formula) {
-    if (root!=nullptr) {
-        cout<<"proba dodania do drzewa zawierajacego juz formule ";
-        return;
-    }
 
-    vector<string> splittedFormula = split(formula);
+
+    vector<string> splittedFormula = Parser::split(formula);
 
     int pos = 0;
     int addedCount = 0;
@@ -59,7 +59,7 @@ Node *Tree::buildNode(vector<string> &formula, int &pos, int &addedcount, int& s
     }
 
     string value = formula[pos++];
-    Type type = calculateType(value);
+    Type type = TypeChecker::calculateType(value);
 
     if (type == UNKNOWN) {
         cout << "UWAGA: Napotkano nieznany symbol \"" << value
@@ -85,25 +85,6 @@ Node *Tree::buildNode(vector<string> &formula, int &pos, int &addedcount, int& s
     // w przeciwym gdy liczba lub zmienna to cofamy się w rekurencji
     // aby uzupełnić braki dla reszty operatorów
     return node;
-}
-
-
-//metoda dzieląca formułę na operatory według spacji
-vector<string> Tree::split(string formula) {
-    vector<string> result;
-    string word;
-
-    for (int i = 0; i < formula.length(); i++) {
-        if (formula[i] != ' ')
-            word += formula[i];
-        else if (!word.empty()) {
-            result.push_back(word);
-            word = "";
-        }
-    }
-
-    if (!word.empty()) result.push_back(word);
-    return result;
 }
 
 //===========================================================================================
@@ -301,85 +282,6 @@ Tree& Tree::operator=(const Tree &tree) {
 
 // ============================================================================
 
-// metoda sprawdzająca typ operacji z danego stringa
-Type Tree::calculateType(std::string &value) {
-    if (value.empty()) return UNKNOWN;
-
-    if (value == OP_SIN || value == OP_COS) return UNARY_OP;
-    if (value == OP_ADD || value == OP_DIV || value == OP_MUL || value == OP_DIV) return BINARY_OP;
-
-    /* żeby znazwa zmiennej była poprawna to:
-     * - musi zawierac co najmniej jedną wielką lub małą literę
-     * - nie może zawierać znaków specjalnych
-     * - może zawierać liczbę, jeżeli zawiera co najmniej jedną litere
-     */
-
-    // nazwa zmiennej przed naprawą
-    string before = value;
-
-    bool containsLetter = cleanAndValidateVariable(value);
-
-    // nazwa zmiennej po naprawie
-    string after = value;
-
-    // usunięto niedozwolone znaki
-    if (before != after) {
-        cout << "UWAGA: Niedozwolone znaki zostaly zignorowane. Token po oczyszczeniu: \""
-             << after << "\"" << endl;
-    }
-
-    // jesli wynik ma litere to jest zmienna
-    if (containsLetter) {
-        return VARIABLE;
-    }
-
-    // jeśli po oczyszczeniu wartosc wygląda jak liczba zmieniamy na liczbe i dajemy komuniakt
-    if (isValidNumber(value)) {
-        if (before != after) {
-            cout << "UWAGA: Token \"" << before
-                 << "\" po oczyszczeniu jest liczba: " << after << endl;
-        }
-        return NUMBER;
-    }
-
-    return UNKNOWN;
-}
-
-// metoda sprawdzająca czy napis jest liczbą całkowitą dodatnią
-bool Tree::isValidNumber(const string &token) {
-    if (token.empty()) return false;
-
-    for (char c : token) {
-        if (!isdigit(static_cast<unsigned char>(c))) return false;
-    }
-    return true;
-}
-
-// metoda naprawiająca zmienną
-bool Tree::cleanAndValidateVariable(string &token) {
-    string original = token;
-    string cleanToken;
-
-    bool containsLetter = false;
-
-    for (int i = 0; i < token.length(); ++i) {
-        char c = token[i];
-
-        // litery i cyfry są dozwolone
-        if (isalnum((unsigned char)c)) {
-            cleanToken += c;
-            if (isalpha(c)) containsLetter = true;
-        }
-    }
-
-    token = cleanToken;
-
-    // jezeli nie ma litery jest niepoprawna
-    if (!containsLetter) return false;
-
-    // Nazwa zmiennej nie może być pusta
-    return !token.empty();
-}
 
 
 // metoda zmieniająca każdą zmienną w drzewie o nazwie "name" na liczbe "value"
