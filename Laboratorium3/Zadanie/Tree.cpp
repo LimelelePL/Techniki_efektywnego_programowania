@@ -65,8 +65,8 @@ Node *Tree::buildNode(vector<string> &formula, int &pos, int &addedcount, int& s
         cout << "UWAGA: Napotkano nieznany symbol \"" << value
         << "\". Pomijanie i kontynuacja parsowania." << endl;
 
-        //pomijamy błędną zmienną, przez co tez musimy zmniejszyć size - dla poprawnej naprawy
-        return buildNode(formula, pos, addedcount, --size);
+        //pomijamy błędną zmienną
+        return buildNode(formula, pos, addedcount, size);
     }
 
     Node *node = new Node(value, type);
@@ -351,7 +351,7 @@ bool Tree::isValidNumber(const string &token) {
     if (token.empty()) return false;
 
     for (char c : token) {
-        if (!isdigit((unsigned char)c)) return false;
+        if (!isdigit(static_cast<unsigned char>(c))) return false;
     }
     return true;
 }
