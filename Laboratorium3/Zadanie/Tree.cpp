@@ -55,7 +55,7 @@ Node *Tree::buildNode(vector<string> &formula, int &pos, int &addedcount, int& s
     // należy wiec je uzupelnic
     if (pos >= size) {
         addedcount++;
-        return new Node("1", NUMBER);
+        return new Node(DEFAULT_NUMBER, NUMBER);
     }
 
     string value = formula[pos++];
@@ -131,7 +131,6 @@ void Tree::comp(vector<double> &values) {
         replaceAll(copy.root, varName, values[i]);
     }
 
-
     cout << "wynik: " << compute(copy.root) << endl;
 }
 
@@ -156,25 +155,25 @@ double Tree::compute(Node *node) {
     // jednoargumentowy jedną liczbę
     // dwuargumentowy dwie liczby
     if (type == UNARY_OP) {
-        vector<Node *> &kids = node->getChildren();
+        vector<Node *> kids = node->getChildren();
         if (kids.empty()) return 0;
         double arg = compute(kids[0]);
-        if (value == "sin") return sin(arg);
-        if (value == "cos") return cos(arg);
+        if (value == OP_SIN) return sin(arg);
+        if (value == OP_COS) return cos(arg);
         return arg;
     }
 
     if (type == BINARY_OP) {
-        vector<Node *> &kids = node->getChildren();
+        vector<Node *> kids = node->getChildren();
         if (kids.size() < 2) return 0; // brakujące argumenty
 
         double left = compute(kids[0]);
         double right = compute(kids[1]);
 
-        if (value == "+") return left + right;
-        if (value == "-") return left - right;
-        if (value == "*") return left * right;
-        if (value == "/") {
+        if (value == OP_ADD) return left + right;
+        if (value == OP_SUB) return left - right;
+        if (value == OP_MUL) return left * right;
+        if (value == OP_DIV) {
             if (right == 0) {
                 cout << "Dzielenie przez 0!" << endl;
                 return 0;
@@ -306,8 +305,8 @@ Tree& Tree::operator=(const Tree &tree) {
 Type Tree::calculateType(std::string &value) {
     if (value.empty()) return UNKNOWN;
 
-    if (value == "sin" || value == "cos") return UNARY_OP;
-    if (value == "+" || value == "-" || value == "*" || value == "/") return BINARY_OP;
+    if (value == OP_SIN || value == OP_COS) return UNARY_OP;
+    if (value == OP_ADD || value == OP_DIV || value == OP_MUL || value == OP_DIV) return BINARY_OP;
 
     /* żeby znazwa zmiennej była poprawna to:
      * - musi zawierac co najmniej jedną wielką lub małą literę
@@ -402,7 +401,7 @@ Node* Tree::getLeaf(Node* node) {
     if (node == nullptr) return nullptr;
     if (node->isLeaf()) return node;
 
-    vector<Node*>& kids = node->getChildren();
+    vector<Node*> kids = node->getChildren();
     for (Node* k : kids) {
         Node* leaf = getLeaf(k);
         if (leaf != nullptr) return leaf;

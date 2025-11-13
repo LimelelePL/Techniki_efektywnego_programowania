@@ -77,7 +77,7 @@ void Node::setParent(Node* parent) {
 }
 
 
-vector<Node *> & Node::getChildren() {
+vector<Node *> Node::getChildren() {
     return children;
 }
 

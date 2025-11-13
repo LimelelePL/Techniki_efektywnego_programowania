@@ -9,6 +9,14 @@
 
 #include "Node.h"
 
+#define DEFAULT_NUMBER "1"
+#define OP_ADD "+"
+#define OP_SUB "-"
+#define OP_MUL "*"
+#define OP_DIV "/"
+#define OP_SIN "sin"
+#define OP_COS "cos"
+
 
 class Tree {
 private:
