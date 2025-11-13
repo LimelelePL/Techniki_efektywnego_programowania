@@ -21,6 +21,7 @@ Tree::~Tree() {
     delete root;
 }
 
+// ==========================================ENTER =============================================
 void Tree::enter(string formula) {
     if (root!=nullptr) {
         cout<<"proba dodania do drzewa zawierajacego juz formule ";
@@ -30,145 +31,62 @@ void Tree::enter(string formula) {
     vector<string> splittedFormula = split(formula);
 
     int pos = 0;
+    int addedCount = 0;
+    int size = splittedFormula.size();
     delete root;
-    root = buildNode(splittedFormula, pos);
+    root = buildNode(splittedFormula, pos, addedCount, size);
 
-    if (pos >= splittedFormula.size()) {
-        cout << "Uwaga dodano potrzebne czesci formuly, finalna formula: " << endl;
+    if (addedCount> 0) {
+        cout << "UWAGA! dodano potrzebne czesci formuly, finalna formula: " << endl;
         print();
     }
 
-    if (pos < splittedFormula.size()) {
-        cout << "Uwaga zignorowano nadmierne czesci formuly, finalna formula: " << endl;
+    if (pos < size) {
+        cout << "UWAGA! zignorowano nadmierne czesci formuly, finalna formula: " << endl;
         print();
     }
 }
 
-void Tree::vars() {
-    vector<Node *> variables = getVars(root);
 
-    for (Node *v: variables) {
-        cout << v->getValue() << " ";
-    }
-}
+// metoda ktora rekurencyjnie buduje nasze drzewo
+Node *Tree::buildNode(vector<string> &formula, int &pos, int &addedcount, int& size) {
 
-/* comp dziala tak, że kopiujemy nasze drzewo do obiektu pomocniczego
- * i zmienne w obiekcie pomocniczym zastępujemy odpowiednimi liczbami
- * następnie obliczamy wartość wyrażenia dla samych liczb w funkcji
- * pomocniczej compute(*Node)
- */
-void Tree::comp(vector<double> &values) {
-    Tree copy(*this);
-
-    vector<Node *> variables = getVars(copy.root);
-
-    if (values.size() != variables.size()) {
-        cout << "Ilość wartości nie zgadza się z ilością zmiennych!" << endl;
-        return;
-    }
-
-    // w kopii drzewa kazda zmienna zamieniamy na liczbe
-    for (int i = 0; i < variables.size(); i++) {
-        variables[i]->setType(NUMBER);
-        variables[i]->setValue(doubleToString(values[i]));
-    }
-
-    cout << "wynik: " << compute(copy.root) << endl;
-}
-
-void Tree::print() {
-    if (root == nullptr) return;
-    print(root);
-    cout<<endl;
-}
-
-// wypisywanie typu preorder
-void Tree::print(Node *node) {
-    if (node == nullptr) {
-        return;
-    }
-    cout << node->getValue() << " ";
-    for (Node *child: node->getChildren()) {
-        print(child);
-    }
-}
-
-void Tree::join(string formula) {
-    Tree tree;
-    tree.enter(formula);
-    *this = *this + tree;
-}
-
-Tree Tree::operator+(const Tree &tree) {
-    Tree result(*this);
-
-    if (tree.root == nullptr) {
-        return result;
-    }
-
-    Node *otherRoot = tree.root->clone();
-
-    // jak nasze drzewo jest puste, to wynikiem jest po prostu kopia tree
-    if (result.root == nullptr) {
-        result.root = otherRoot;
-        return result;
-    }
-
-    Node* leaf = result.getLeaf(result.root);
-    Node* parent = leaf->getParent();
-
-    if (parent == nullptr) {
-        delete result.root;
-        result.root = otherRoot;
-        return result;
-    }
-
-    parent->removeChild(leaf);
-    delete leaf;
-
-    parent->addChildren(otherRoot);
-
-    return result;
-}
-
-
-Tree& Tree::operator=(const Tree &tree) {
-    if (this == &tree) return *this;
-
-    delete root;
-    root = tree.root->clone();
-
-    return *this;
-}
-
-// rekurencyjnie budujemy nasze drzewo
-Node *Tree::buildNode(vector<string> &formula, int &pos) {
     // warunek ten oznacza, że brakuje nam elementów przy danym operatorze
     // należy wiec je uzupelnic
-    if (pos >= formula.size()) {
+    if (pos >= size) {
+        addedcount++;
         return new Node("1", NUMBER);
     }
 
     string value = formula[pos++];
     Type type = calculateType(value);
-    Node *node = new Node(value, type);
 
+    if (type == UNKNOWN) {
+        cout << "UWAGA: Napotkano nieznany symbol \"" << value
+        << "\". Pomijanie i kontynuacja parsowania." << endl;
+
+        //pomijamy błędną zmienną, przez co tez musimy zmniejszyć size - dla poprawnej naprawy
+        return buildNode(formula, pos, addedcount, --size);
+    }
+
+    Node *node = new Node(value, type);
 
     // jednorguentowy -> jedno dziecko
     if (type == UNARY_OP) {
-        node->addChildren(buildNode(formula, pos));
+        node->addChildren(buildNode(formula, pos, addedcount,size));
     }
     //dwuargumentowy -> dwoje dzieci
     else if (type == BINARY_OP) {
         // najpiew lewe dziecko
-
-        node->addChildren(buildNode(formula, pos));
-        node->addChildren(buildNode(formula, pos));
+        node->addChildren(buildNode(formula, pos,addedcount,size));
+        // potem prawe
+        node->addChildren(buildNode(formula, pos,addedcount,size));
     }
     // w przeciwym gdy liczba lub zmienna to cofamy się w rekurencji
     // aby uzupełnić braki dla reszty operatorów
     return node;
 }
+
 
 //metoda dzieląca formułę na operatory według spacji
 vector<string> Tree::split(string formula) {
@@ -188,39 +106,33 @@ vector<string> Tree::split(string formula) {
     return result;
 }
 
-// metoda sprawdzająca typ danego operatora
-Type Tree::calculateType(const string &value) {
-    if (value.empty()) return UNKNOWN;
-    if (value == "sin" || value == "cos") return UNARY_OP;
-    if (value == "+" || value == "-" || value == "*" || value == "/") return BINARY_OP;
-    if (isdigit(value[0])) return NUMBER;
-    if (isalpha(value[0])) return VARIABLE;
-    return UNKNOWN;
-}
+//===========================================================================================
+
+//====================================COMP=========================================
+/* comp dziala tak, że kopiujemy nasze drzewo do obiektu pomocniczego
+ * i zmienne w obiekcie pomocniczym zastępujemy odpowiednimi liczbami
+ * następnie obliczamy wartość wyrażenia dla samych liczb w funkcji
+ * pomocniczej compute(*Node)
+ */
+void Tree::comp(vector<double> &values) {
+    Tree copy(*this);
+
+    vector<Node *> variables = getUniqueVars(copy.root);
 
 
-vector<Node *> Tree::getVars(Node *node) {
-    vector<Node *> temp;
-    return getVars(node, temp);
-}
-
-//taka implemenacja bo podniej vector vars ktory stąd wezmiemt przyda nam sie do comp;
-vector<Node *> Tree::getVars(Node *node, vector<Node *> nodes) {
-    vector<Node *> result = nodes;
-    if (node == nullptr) {
-        return result;
+    if (values.size() != variables.size()) {
+        cout << "Ilosc wartosci nie zgadza się z iloscia zmiennych!" << endl;
+        return;
     }
 
-    if (node->getType() == VARIABLE) {
-        //cout<<"dodaje " << node->getValue() << endl;
-        result.push_back(node);
+    // w kopii drzewa kazda zmienna zamieniamy na liczbe
+    for (int i = 0; i < variables.size(); i++) {
+        string varName = variables[i]->getValue();
+        replaceAll(copy.root, varName, values[i]);
     }
 
-    for (Node *child: node->getChildren()) {
-        result = getVars(child, result);
-    }
 
-    return result;
+    cout << "wynik: " << compute(copy.root) << endl;
 }
 
 
@@ -240,7 +152,7 @@ double Tree::compute(Node *node) {
         return 0;
     }
 
-  // w obu operatorach musimy zejsc tak nisko w rekrencji aż otrzymają
+    // w obu operatorach musimy zejsc tak nisko w rekrencji aż otrzymają
     // jednoargumentowy jedną liczbę
     // dwuargumentowy dwie liczby
     if (type == UNARY_OP) {
@@ -274,6 +186,218 @@ double Tree::compute(Node *node) {
     return 0;
 }
 
+//=================================================================================================
+
+// ========================== VARS ==================================
+void Tree::vars() {
+    vector<Node *> variables = getUniqueVars(root);
+
+    for (Node *v: variables) {
+        cout << v->getValue() << " ";
+    }
+}
+
+// metoda zwracająca unikalne zmienne z drzewa
+vector<Node *> Tree::getUniqueVars(Node *node) {
+    vector<Node *> temp;
+    set<string> uniqueNodes;
+    return getUniqueVars(node, temp,uniqueNodes);
+}
+
+//metoda zwracająca unikalne zmienne z drzewa
+vector<Node *> Tree::getUniqueVars(Node *node, vector<Node *> &result, set<string> &uniqueNodes) {
+    if (node == nullptr) {
+        return result;
+    }
+
+    if (node->getType() == VARIABLE) {
+        string varName = node->getValue();
+        // jezeli jest taka sama zmienna to jej nie powtarzamy w wynikowej liscie
+        if (uniqueNodes.find(varName) == uniqueNodes.end()) {
+            result.push_back(node);
+            uniqueNodes.insert(varName);
+        }
+    }
+
+    //wywołujemy metode rekurencyjnie dla poddrzew
+    for (Node *child: node->getChildren()) {
+        result = getUniqueVars(child, result, uniqueNodes);
+    }
+
+    return result;
+}
+
+// ==================================PRINT ==============================================
+void Tree::print() {
+    if (root == nullptr) return;
+    print(root);
+    cout<<endl;
+}
+
+// wypisywanie typu preorder
+void Tree::print(Node *node) {
+    if (node == nullptr) {
+        return;
+    }
+    cout << node->getValue() << " ";
+    for (Node *child: node->getChildren()) {
+        print(child);
+    }
+}
+
+//===============================================================================================
+
+// =============================JOIN=====================================
+
+void Tree::join(string formula) {
+    Tree tree;
+    tree.enter(formula);
+    *this = *this + tree;
+}
+//=============================================================
+
+// =========================== OPERATOR + ==========================
+Tree Tree::operator+(const Tree &tree) {
+    Tree result(*this);
+
+    if (tree.root == nullptr) {
+        return result;
+    }
+
+    Node *otherRoot = tree.root->clone();
+
+    // jak nasze drzewo jest puste, to wynikiem jest po prostu kopia tree
+    if (result.root == nullptr) {
+        result.root = otherRoot;
+        return result;
+    }
+
+    // zamiast danego liscia przypinamy korzen drugiego drzewa
+    Node* leaf = result.getLeaf(result.root);
+    Node* parent = leaf->getParent();
+
+    if (parent == nullptr) {
+        delete result.root;
+        result.root = otherRoot;
+        return result;
+    }
+
+    parent->removeChild(leaf);
+    delete leaf;
+
+    parent->addChildren(otherRoot);
+
+    return result;
+}
+
+// ============================= OPERATOR = ==========================================
+Tree& Tree::operator=(const Tree &tree) {
+    if (this == &tree) return *this;
+
+    delete root;
+    root = tree.root->clone();
+
+    return *this;
+}
+
+// ============================================================================
+
+// metoda sprawdzająca typ operacji z danego stringa
+Type Tree::calculateType(std::string &value) {
+    if (value.empty()) return UNKNOWN;
+
+    if (value == "sin" || value == "cos") return UNARY_OP;
+    if (value == "+" || value == "-" || value == "*" || value == "/") return BINARY_OP;
+
+    /* żeby znazwa zmiennej była poprawna to:
+     * - musi zawierac co najmniej jedną wielką lub małą literę
+     * - nie może zawierać znaków specjalnych
+     * - może zawierać liczbę, jeżeli zawiera co najmniej jedną litere
+     */
+
+    // nazwa zmiennej przed naprawą
+    string before = value;
+
+    bool containsLetter = cleanAndValidateVariable(value);
+
+    // nazwa zmiennej po naprawie
+    string after = value;
+
+    // usunięto niedozwolone znaki
+    if (before != after) {
+        cout << "UWAGA: Niedozwolone znaki zostaly zignorowane. Token po oczyszczeniu: \""
+             << after << "\"" << endl;
+    }
+
+    // jesli wynik ma litere to jest zmienna
+    if (containsLetter) {
+        return VARIABLE;
+    }
+
+    // jeśli po oczyszczeniu wartosc wygląda jak liczba zmieniamy na liczbe i dajemy komuniakt
+    if (isValidNumber(value)) {
+        if (before != after) {
+            cout << "UWAGA: Token \"" << before
+                 << "\" po oczyszczeniu jest liczba: " << after << endl;
+        }
+        return NUMBER;
+    }
+
+    return UNKNOWN;
+}
+
+// metoda sprawdzająca czy napis jest liczbą całkowitą dodatnią
+bool Tree::isValidNumber(const string &token) {
+    if (token.empty()) return false;
+
+    for (char c : token) {
+        if (!isdigit((unsigned char)c)) return false;
+    }
+    return true;
+}
+
+// metoda naprawiająca zmienną
+bool Tree::cleanAndValidateVariable(string &token) {
+    string original = token;
+    string cleanToken;
+
+    bool containsLetter = false;
+
+    for (int i = 0; i < token.length(); ++i) {
+        char c = token[i];
+
+        // litery i cyfry są dozwolone
+        if (isalnum((unsigned char)c)) {
+            cleanToken += c;
+            if (isalpha(c)) containsLetter = true;
+        }
+    }
+
+    token = cleanToken;
+
+    // jezeli nie ma litery jest niepoprawna
+    if (!containsLetter) return false;
+
+    // Nazwa zmiennej nie może być pusta
+    return !token.empty();
+}
+
+
+// metoda zmieniająca każdą zmienną w drzewie o nazwie "name" na liczbe "value"
+void Tree::replaceAll(Node* node, const string& name, double value){
+    if (!node) return;
+
+    if (node->getType() == VARIABLE && node->getValue() == name) {
+        node->setType(NUMBER);
+        node->setValue(doubleToString(value));
+    }
+
+    for (Node* child : node->getChildren()) {
+        replaceAll(child, name, value);
+    }
+}
+
+//metoda zwracająca dowolny liść
 Node* Tree::getLeaf(Node* node) {
     if (node == nullptr) return nullptr;
     if (node->isLeaf()) return node;
@@ -285,9 +409,6 @@ Node* Tree::getLeaf(Node* node) {
     }
     return nullptr;
 }
-
-
-
 
 string Tree::doubleToString(double value) {
     stringstream ss;

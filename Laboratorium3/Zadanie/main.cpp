@@ -7,12 +7,12 @@ int main() {
     cout << "==== TEST 0: naprawa +++  ====" << endl;
     Tree t0;
     t0.enter("+ + +");
-    t0.print();
+    t0.print(); // + + + 1 1 1 1
     cout << endl << endl;
 
     cout << "==== TEST 01: naprawa +1  ====" << endl;
     Tree t01;
-    t01.enter("+ 1 1 1");
+    t01.enter("+ 1 1 1"); // + 1 1
     t01.print();
     cout << endl << endl;
 
@@ -47,10 +47,10 @@ int main() {
     t5.enter("* 2 3");
 
     Tree t6 = t4 + t5;
-    t6.print();   // + a b * 2 3
+    t6.print();   // + b * 2 3
     cout << endl << endl;
 
-    cout << "==== TEST 5: operator+ gdy root jest liściem ====" << endl;
+    cout << "==== TEST 5: operator+ gdy root jest lisciem ====" << endl;
     Tree t7;
     Tree t8;
     t7.enter("a");
@@ -65,20 +65,20 @@ int main() {
     t10.enter("+ a b");
     t10.join("* 2 2");
 
-    t10.print();   // + a b * 2 2
+    t10.print();   // + b * 2 2
     cout << endl << endl;
 
     cout << "==== TEST 7: comp po join ====" << endl;
     Tree t11;
-    t11.enter("+ a 3");
+    t11.enter("+ a b 3");
     t11.print();
 
     t11.join("+ 1 1");
     t11.print();   // + a 3 + 1 1
     cout << endl;
 
-    vector<double> vals11 = {4}; // a=4
-    t11.comp(vals11); // wynik = 4 + 3 + (1+1) = 9
+    vector<double> vals11 = {4}; // b=4
+    t11.comp(vals11); // wynik = 4 + (1+1) = 6
     cout << endl;
 
     cout << "==== TEST 8: operator+ z pustym drzewem ====" << endl;
@@ -96,18 +96,20 @@ int main() {
     t15.print();  // + 2 2
     cout << endl << endl;
 
-    cout << "==== TEST 10: wiele operator+ ====" << endl;
+    cout << "==== TEST 10: wiele operatorow + ====" << endl;
     Tree a, b, c;
     a.enter("+ x 1");
     b.enter("+ y 2");
     c.enter("+ z 3");
 
     Tree r = a + b;
+    r.print();
+    cout<<endl;
     r = r + c;
-    r.print();  //  + + x 1 + y 2 + z 3
+    r.print();  // x x y 2 + z 3
     cout << endl << endl;
 
-    cout << "==== TEST 11: głęboka rekursja ====" << endl;
+    cout << "==== TEST 11: gleboka rekursja ====" << endl;
     Tree longTree;
     longTree.enter("+ + + 1 1 1 1");
     longTree.print();
@@ -115,6 +117,43 @@ int main() {
     vector<double> vlong; // brak zmiennych
     longTree.comp(vlong);
     cout << endl << endl;
+
+
+    cout<<"==== TEST 12: NIEPOPRAWNA NAZWA ZMIENNEJ - ZMIANA NA LICZBE ====" <<endl;
+    Tree t123;
+    t123.enter("+ &3 a");
+    vector<double> vt123 = {1};
+    t123.comp(vt123);
+
+    cout<<"==== TEST 14: NIEPOPRAWNA NAZWA ZMIENNEJ ====" <<endl;
+    Tree t1234;
+    t1234.enter("+ &$ a");
+
+    cout<<"==== TEST 15: NIEPOPRAWNA LICZBBA ====" <<endl;
+    Tree t12345;
+    t12345.enter("+ 1.1 a");
+    vector<double> vt12345 = {1};
+    t12345.comp(vt12345);
+
+    cout<<"==== TEST 15: duzo zmiennych a ====" <<endl;
+    Tree ta1;
+    ta1.enter("+ + a a + a a");
+    ta1.print();
+    cout<<"vars () "<<endl;
+    ta1.vars();
+    cout<<"compute 1 "<<endl;
+    vector<double> ta1v = {1};
+    ta1.comp(ta1v);
+
+    cout<<"==== TEST 15: duzo zmiennych a i b ====" <<endl;
+    Tree ta2;
+    ta2.enter("+ + a a + b b  ");
+    ta2.print();
+    cout<<"vars () "<<endl;
+    ta2.vars();
+    cout<<"comp 1,2 "<<endl;
+    vector<double> ta2v = {1,2};
+    ta2.comp(ta2v);
 
     cout << "==== TESTY ZAKOŃCZONE ====" << endl;
     return 0;

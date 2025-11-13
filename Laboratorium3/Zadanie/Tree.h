@@ -5,6 +5,8 @@
 #ifndef ZADANIE_TREE_H
 #define ZADANIE_TREE_H
 
+#include <set>
+
 #include "Node.h"
 
 
@@ -12,14 +14,17 @@ class Tree {
 private:
     Node* root;
 
-    Type calculateType (const string& value);
-    vector<Node*> getVars(Node* node);
-    vector<Node*> getVars(Node* node, vector<Node*> nodes);
+    Type calculateType (string& value);
+    vector<Node*> getUniqueVars(Node* node);
+    vector<Node*> getUniqueVars(Node* node, vector<Node*>& result, set<string>& uniqueNodes);
     void print(Node* node);
     vector<string> split(string formula);
-    Node* buildNode (vector<string>& formula, int &pos);
+    Node* buildNode (vector<string>& formula, int &pos, int& addedCount, int& size);
     string doubleToString(double value);
+    void replaceAll(Node* node, const string& name, double value);
 
+    bool isValidNumber(const string& token);
+    bool cleanAndValidateVariable(string& token);
     Node* getLeaf (Node* node);
     double compute (Node* node);
 
