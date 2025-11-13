@@ -19,8 +19,8 @@ Node::Node(string value, Type type) {
 }
 
 Node::~Node() {
-    for (int i = 0; i<children.size(); i++) {
-        if (children[i] != nullptr) delete children[i];
+    for (Node* c : children) {
+        if (c!= nullptr) delete c;
     }
     children.clear();
 }
@@ -30,14 +30,17 @@ Node::Node(const Node &copy) {
     this->type = copy.type;
     this->parent = nullptr;
 
-    for (Node* c : children) {
+    // kopiujemy reszte dzieci
+    for (Node* c : copy.children) {
         Node* newChild = c->clone();
         newChild->setParent(this);
         this->children.push_back(newChild);
     }
 }
 
+// kopiujemy całą strukturę od danego node'a w dół
 Node * Node::clone() {
+
     Node* newNode = new Node(value, type);
     newNode->parent = nullptr;
 
@@ -78,19 +81,31 @@ vector<Node *> & Node::getChildren() {
     return children;
 }
 
-void Node::addChildren(Node* child) {
+
+void Node::removeChild(Node* child) {
+    vector<Node*>& kids = children;
+    for (int i = 0; i < kids.size(); i++) {
+        if (kids[i] == child) {
+            kids.erase(kids.begin() + i);
+            return;
+        }
+    }
+}
+
+void Node::addChildren(Node *child) {
     if (child == nullptr) return;
     child->setParent(this);
+    children.push_back(child);
 
-    if (type == UNARY_OP && children.size() < 1)
-        children.push_back(child);
-    else if (type == BINARY_OP && children.size() < 2)
-        children.push_back(child);
-    else if (type == TENARY_OP && children.size() < 3)
-        children.push_back(child);
-    else if (type == NUMBER || type == VARIABLE || type == UNKNOWN) {
-        cout << "Uwaga: próba dodania dziecka do liścia '" << value << "'" << endl;
-    }
+    // if (type == UNARY_OP && children.empty())
+    //     children.push_back(child);
+    // else if (type == BINARY_OP && children.size() < 2)
+    //     children.push_back(child);
+    // else if (type == TENARY_OP && children.size() < 3)
+    //     children.push_back(child);
+    // else if (type == NUMBER || type == VARIABLE || type == UNKNOWN) {
+    //     cout << "Uwaga: próba dodania dziecka do liścia '" << value << "'" << endl;
+    // }
 }
 
 bool Node::isLeaf() const {

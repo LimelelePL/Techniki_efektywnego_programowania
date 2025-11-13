@@ -13,7 +13,7 @@ Tree::Tree() {
 }
 
 Tree::Tree(const Tree &copy) {
-    root = copy.root->clone();
+    root = (copy.root ? copy.root->clone() : nullptr);
 }
 
 Tree::~Tree() {
@@ -22,12 +22,18 @@ Tree::~Tree() {
 }
 
 void Tree::enter(string formula) {
+    if (root!=nullptr) {
+        cout<<"proba dodania do drzewa zawierajacego juz formule ";
+        return;
+    }
+
     vector<string> splittedFormula = split(formula);
+
     int pos = 0;
     delete root;
     root = buildNode(splittedFormula, pos);
 
-    if (pos > splittedFormula.size()) {
+    if (pos >= splittedFormula.size()) {
         cout << "Uwaga dodano potrzebne czesci formuly, finalna formula: " << endl;
         print();
     }
@@ -71,7 +77,9 @@ void Tree::comp(vector<double> &values) {
 }
 
 void Tree::print() {
+    if (root == nullptr) return;
     print(root);
+    cout<<endl;
 }
 
 // wypisywanie typu preorder
@@ -86,14 +94,51 @@ void Tree::print(Node *node) {
 }
 
 void Tree::join(string formula) {
-}
-
-void Tree::operator=(const Tree &tree) {
-    root = tree.root->clone();
+    Tree tree;
+    tree.enter(formula);
+    *this = *this + tree;
 }
 
 Tree Tree::operator+(const Tree &tree) {
+    Tree result(*this);
 
+    if (tree.root == nullptr) {
+        return result;
+    }
+
+    Node *otherRoot = tree.root->clone();
+
+    // jak nasze drzewo jest puste, to wynikiem jest po prostu kopia tree
+    if (result.root == nullptr) {
+        result.root = otherRoot;
+        return result;
+    }
+
+    Node* leaf = result.getLeaf(result.root);
+    Node* parent = leaf->getParent();
+
+    if (parent == nullptr) {
+        delete result.root;
+        result.root = otherRoot;
+        return result;
+    }
+
+    parent->removeChild(leaf);
+    delete leaf;
+
+    parent->addChildren(otherRoot);
+
+    return result;
+}
+
+
+Tree& Tree::operator=(const Tree &tree) {
+    if (this == &tree) return *this;
+
+    delete root;
+    root = tree.root->clone();
+
+    return *this;
 }
 
 // rekurencyjnie budujemy nasze drzewo
@@ -101,15 +146,13 @@ Node *Tree::buildNode(vector<string> &formula, int &pos) {
     // warunek ten oznacza, że brakuje nam elementów przy danym operatorze
     // należy wiec je uzupelnic
     if (pos >= formula.size()) {
-        cout << "zastepuje braki jedynkami \n";
         return new Node("1", NUMBER);
     }
 
     string value = formula[pos++];
-
     Type type = calculateType(value);
-
     Node *node = new Node(value, type);
+
 
     // jednorguentowy -> jedno dziecko
     if (type == UNARY_OP) {
@@ -117,6 +160,8 @@ Node *Tree::buildNode(vector<string> &formula, int &pos) {
     }
     //dwuargumentowy -> dwoje dzieci
     else if (type == BINARY_OP) {
+        // najpiew lewe dziecko
+
         node->addChildren(buildNode(formula, pos));
         node->addChildren(buildNode(formula, pos));
     }
@@ -228,6 +273,20 @@ double Tree::compute(Node *node) {
 
     return 0;
 }
+
+Node* Tree::getLeaf(Node* node) {
+    if (node == nullptr) return nullptr;
+    if (node->isLeaf()) return node;
+
+    vector<Node*>& kids = node->getChildren();
+    for (Node* k : kids) {
+        Node* leaf = getLeaf(k);
+        if (leaf != nullptr) return leaf;
+    }
+    return nullptr;
+}
+
+
 
 
 string Tree::doubleToString(double value) {

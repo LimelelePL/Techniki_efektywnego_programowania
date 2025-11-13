@@ -42,6 +42,8 @@ public:
     void setParent(Node *parent);
 
     vector<Node *> &getChildren();
+    void removeChild(Node* child);
+
 };
 
 

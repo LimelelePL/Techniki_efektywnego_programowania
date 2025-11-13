@@ -20,7 +20,8 @@ private:
     Node* buildNode (vector<string>& formula, int &pos);
     string doubleToString(double value);
 
-    double compute (Node *node);
+    Node* getLeaf (Node* node);
+    double compute (Node* node);
 
 public:
     Tree();
@@ -34,8 +35,7 @@ public:
 
     void print();
 
-
-    void operator = (const Tree& tree);
+    Tree& operator = (const Tree& tree);
     Tree operator + (const Tree& tree);
 };
 
