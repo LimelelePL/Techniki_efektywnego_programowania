@@ -19,38 +19,40 @@
 #define OP_COS "cos"
 
 #include "Parser.h"
+#include "Result.h"
 
 
 class Tree {
+public:
+    Tree();
+    Tree(const Tree& copy);
+    ~Tree();
+
+    Result enter(string formula);
+    Result vars(vector<string> &outVars);
+    Result comp(vector<double>& values, double &outResult);
+    Result join(string formula);
+    Result print(string &outFormula);
+
+    Tree& operator = (const Tree& tree);
+    Tree operator + (const Tree& tree);
+
 private:
     Node* root;
 
     //Type calculateType (string& value);
     vector<Node*> getUniqueVars(Node* node);
     vector<Node*> getUniqueVars(Node* node, vector<Node*>& result, set<string>& uniqueNodes);
-    void print(Node* node);
+    void print(Node *node, stringstream &ss);
 
-    Node* buildNode (vector<string>& formula, int &pos, int& addedCount, int& size);
+    Node* buildNode(vector<string>& formula, int &pos, int &addedCount, int &size, bool &cleanedLocal);
+
     string doubleToString(double value);
     void replaceAll(Node* node, const string& name, double value);
 
     Node* getLeaf (Node* node);
-    double compute (Node* node);
-
-public:
-    Tree();
-    Tree(const Tree& copy);
-    ~Tree();
-
-    void enter(string formula);
-    void vars();
-    void comp(vector<double>& values);
-    void join(string formula);
-
-    void print();
-
-    Tree& operator = (const Tree& tree);
-    Tree operator + (const Tree& tree);
+    double compute(Node *node, ErrorCode &err);
+    Result makeWarningsResult(vector<string> &warnings, int addedCount, int pos, int size);
 };
 
 

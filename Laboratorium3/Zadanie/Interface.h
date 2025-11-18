@@ -8,10 +8,11 @@
 
 
 class Interface {
-private:
-    Tree tree;
 public:
     void run();
+private:
+    Tree tree;
+    static void printError(const Result &r);
 };
 
 

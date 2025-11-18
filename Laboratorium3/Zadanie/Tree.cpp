@@ -5,7 +5,6 @@
 #include "Tree.h"
 
 #include <cmath>
-#include <iostream>
 #include <sstream>
 
 #include "Parser.h"
@@ -25,62 +24,79 @@ Tree::~Tree() {
 }
 
 // ==========================================ENTER =============================================
-void Tree::enter(string formula) {
-
-
+Result Tree::enter(string formula) {
+    bool cleanedLocal = false;
     vector<string> splittedFormula = Parser::split(formula);
 
     int pos = 0;
     int addedCount = 0;
-    int size = splittedFormula.size();
-    delete root;
-    root = buildNode(splittedFormula, pos, addedCount, size);
+    int size = static_cast<int>(splittedFormula.size());
 
-    if (addedCount> 0) {
-        cout << "UWAGA! dodano potrzebne czesci formuly, finalna formula: " << endl;
-        print();
+    delete root; // usuwamy stare drzewo
+    root = nullptr;
+
+    root = buildNode(splittedFormula, pos, addedCount, size, cleanedLocal);
+
+    vector<string> warnings;
+    if (cleanedLocal) {
+        warnings.push_back("Zignorowano niedozwolone znaki w tokenach.");
+    }
+
+    if (root == nullptr) {
+        return Result::success();
+    }
+
+    if (addedCount > 0) {
+        warnings.push_back("Dodano brakujace częsci formuly.");
     }
 
     if (pos < size) {
-        cout << "UWAGA! zignorowano nadmierne czesci formuly, finalna formula: " << endl;
-        print();
+        warnings.push_back("Zignorowano nadmierne czesci formuly.");
     }
+
+    if (!warnings.empty()) return makeWarningsResult(warnings, addedCount, pos, size);
+
+    return Result::success();
 }
 
 
 // metoda ktora rekurencyjnie buduje nasze drzewo
-Node *Tree::buildNode(vector<string> &formula, int &pos, int &addedcount, int& size) {
+Node* Tree::buildNode(vector<string> &formula, int &pos, int &addedCount, int &size, bool &cleanedLocal) {
 
     // warunek ten oznacza, że brakuje nam elementów przy danym operatorze
     // należy wiec je uzupelnic
     if (pos >= size) {
-        addedcount++;
+        addedCount++;
         return new Node(DEFAULT_NUMBER, NUMBER);
     }
 
     string value = formula[pos++];
+
+    string before = value;
     Type type = TypeChecker::calculateType(value);
+    string after = value;
+
+    if (before != after) {
+        cleanedLocal = true;
+    }
 
     if (type == UNKNOWN) {
-        cout << "UWAGA: Napotkano nieznany symbol \"" << value
-        << "\". Pomijanie i kontynuacja parsowania." << endl;
-
         //pomijamy błędną zmienną
-        return buildNode(formula, pos, addedcount, size);
+        return buildNode(formula, pos, addedCount, size, cleanedLocal);
     }
 
     Node *node = new Node(value, type);
 
     // jednorguentowy -> jedno dziecko
     if (type == UNARY_OP) {
-        node->addChildren(buildNode(formula, pos, addedcount,size));
+        node->addChildren(buildNode(formula, pos, addedCount,size, cleanedLocal));
     }
     //dwuargumentowy -> dwoje dzieci
     else if (type == BINARY_OP) {
         // najpiew lewe dziecko
-        node->addChildren(buildNode(formula, pos,addedcount,size));
+        node->addChildren(buildNode(formula, pos,addedCount,size, cleanedLocal));
         // potem prawe
-        node->addChildren(buildNode(formula, pos,addedcount,size));
+        node->addChildren(buildNode(formula, pos,addedCount,size, cleanedLocal));
     }
     // w przeciwym gdy liczba lub zmienna to cofamy się w rekurencji
     // aby uzupełnić braki dla reszty operatorów
@@ -95,15 +111,21 @@ Node *Tree::buildNode(vector<string> &formula, int &pos, int &addedcount, int& s
  * następnie obliczamy wartość wyrażenia dla samych liczb w funkcji
  * pomocniczej compute(*Node)
  */
-void Tree::comp(vector<double> &values) {
-    Tree copy(*this);
+Result Tree::comp(vector<double> &values, double &outResult) {
+    outResult = 0.0;
 
+    if (root == nullptr) {
+        return Result(ERR_EMPTY_TREE, "Drzewo jest puste." );
+    }
+
+    Tree copy(*this);
     vector<Node *> variables = getUniqueVars(copy.root);
 
-
     if (values.size() != variables.size()) {
-        cout << "Ilosc wartosci nie zgadza się z iloscia zmiennych!" << endl;
-        return;
+        return Result(ERR_COMP_VALUE_MISMATCH, "Ilosc wartosci nie zgadza się z iloscia zmiennych." );
+    }
+    if (values.size() == 0) {
+        return Result(ERR_COMP_VALUE_MISMATCH, "Brak arumentów w funkcji compen" );
     }
 
     // w kopii drzewa kazda zmienna zamieniamy na liczbe
@@ -112,12 +134,23 @@ void Tree::comp(vector<double> &values) {
         replaceAll(copy.root, varName, values[i]);
     }
 
-    cout << "wynik: " << compute(copy.root) << endl;
+    ErrorCode err = OK;
+    double result = compute(copy.root, err);
+
+    if (err != OK) {
+        if (err == ERR_DIV_BY_ZERO) {
+            return Result(ERR_DIV_BY_ZERO, "Dzielenie przez 0.");
+        }
+        return Result(err, "Blad obliczen.");
+    }
+
+    outResult = result;
+    return Result::success();
 }
 
 
-double Tree::compute(Node *node) {
-    if (node == nullptr) return 0;
+double Tree::compute(Node *node, ErrorCode &err) {
+    if (node == nullptr || err != OK) return 0;
 
     string value = node->getValue();
     Type type = node->getType();
@@ -127,7 +160,7 @@ double Tree::compute(Node *node) {
         return atof(value.c_str());
     }
 
-    //raczej nie powinno sie wydarzyć
+    //raczej nie powinno sie wydarzyć po zmieanie zmiennych na liczby
     if (type == VARIABLE) {
         return 0;
     }
@@ -138,7 +171,7 @@ double Tree::compute(Node *node) {
     if (type == UNARY_OP) {
         vector<Node *> kids = node->getChildren();
         if (kids.empty()) return 0;
-        double arg = compute(kids[0]);
+        double arg = compute(kids[0], err);
         if (value == OP_SIN) return sin(arg);
         if (value == OP_COS) return cos(arg);
         return arg;
@@ -148,15 +181,15 @@ double Tree::compute(Node *node) {
         vector<Node *> kids = node->getChildren();
         if (kids.size() < 2) return 0; // brakujące argumenty
 
-        double left = compute(kids[0]);
-        double right = compute(kids[1]);
+        double left = compute(kids[0],err);
+        double right = compute(kids[1],err);
 
         if (value == OP_ADD) return left + right;
         if (value == OP_SUB) return left - right;
         if (value == OP_MUL) return left * right;
         if (value == OP_DIV) {
             if (right == 0) {
-                cout << "Dzielenie przez 0!" << endl;
+                err = ERR_DIV_BY_ZERO;
                 return 0;
             }
             return left / right;
@@ -169,12 +202,19 @@ double Tree::compute(Node *node) {
 //=================================================================================================
 
 // ========================== VARS ==================================
-void Tree::vars() {
+Result Tree::vars(vector<string> &outVars) {
+    outVars.clear();
+
+    if (root == nullptr) {
+        return Result(ERR_EMPTY_TREE, "Drzewo jest puste.");
+    }
+
     vector<Node *> variables = getUniqueVars(root);
 
     for (Node *v: variables) {
-        cout << v->getValue() << " ";
+        outVars.push_back(v->getValue());
     }
+    return Result::success();
 }
 
 // metoda zwracająca unikalne zmienne z drzewa
@@ -208,20 +248,30 @@ vector<Node *> Tree::getUniqueVars(Node *node, vector<Node *> &result, set<strin
 }
 
 // ==================================PRINT ==============================================
-void Tree::print() {
-    if (root == nullptr) return;
-    print(root);
-    cout<<endl;
-}
+Result Tree::print(string &outFormula) {
+    outFormula = "";
 
+    if (root == nullptr) {
+        return Result(ERR_EMPTY_TREE, "Drzewo jest puste.");
+    }
+
+    stringstream ss;
+    print(root, ss);
+    outFormula = ss.str();
+
+    return Result::success();
+}
 // wypisywanie typu preorder
-void Tree::print(Node *node) {
+void Tree::print(Node *node, stringstream &ss) {
     if (node == nullptr) {
         return;
     }
-    cout << node->getValue() << " ";
-    for (Node *child: node->getChildren()) {
-        print(child);
+
+    ss << node->getValue() << " ";
+
+    vector<Node*> children = node->getChildren();
+    for (Node* c : children) {
+        print(c, ss);
     }
 }
 
@@ -229,10 +279,15 @@ void Tree::print(Node *node) {
 
 // =============================JOIN=====================================
 
-void Tree::join(string formula) {
+Result Tree::join(string formula) {
     Tree tree;
-    tree.enter(formula);
+    Result r = tree.enter(formula);
+    if (r.getCode() != OK) {
+        return r;
+    }
+
     *this = *this + tree;
+    return Result::success();
 }
 //=============================================================
 
@@ -316,4 +371,28 @@ string Tree::doubleToString(double value) {
     ss << value;
     return ss.str();
 }
+
+
+Result Tree::makeWarningsResult(vector<string> &warnings, int addedCount, int pos, int size) {
+    // doda osjmytateczna formułe
+    string finalFormula;
+    Result pr = this->print(finalFormula);
+    if (pr.getCode() == OK && !finalFormula.empty()) {
+        warnings.push_back(string("Ostateczna formula: ") + finalFormula);
+    }
+
+    // wybieramy kod
+    ErrorCode code = WARN_CLEANED_TOKEN;
+    if (addedCount > 0) code = WARN_MISSING_TOKENS;
+    else if (pos < size) code = WARN_EXTRA_TOKENS;
+
+    // łączymy komunikaty w jedną wiadomość wieloliniową
+    string msg;
+    for (size_t i = 0; i < warnings.size(); ++i) {
+        msg += warnings[i];
+        if (i + 1 < warnings.size()) msg += "\n";
+    }
+    return Result(code, msg);
+}
+
 

@@ -30,23 +30,13 @@ Type TypeChecker::calculateType(std::string &value) {
     // nazwa zmiennej po naprawie
     string after = value;
 
-    // usunięto niedozwolone znaki
-    if (before != after) {
-        cout << "UWAGA: Niedozwolone znaki zostaly zignorowane. Token po oczyszczeniu: \""
-             << after << "\"" << endl;
-    }
-
     // jesli wynik ma litere to jest zmienna
     if (containsLetter) {
         return VARIABLE;
     }
 
-    // jeśli po oczyszczeniu wartosc wygląda jak liczba zmieniamy na liczbe i dajemy komuniakt
+    // jeśli po oczyszczeniu wartosc wygląda jak liczba zmieniamy na liczbe
     if (Parser::isValidNumber(value)) {
-        if (before != after) {
-            cout << "UWAGA: Token \"" << before
-                 << "\" po oczyszczeniu jest liczba: " << after << endl;
-        }
         return NUMBER;
     }
 

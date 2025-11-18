@@ -1,12 +1,36 @@
-//
-// Created by Dominik on 13.11.2025.
-//
 
 #include "Interface.h"
 
 #include <iostream>
 #include <sstream>
 using namespace std;
+
+void Interface::printError(const Result &r) {
+
+    if (r.getCode() == OK) return;
+
+    switch (r.getCode()) {
+        case ERR_EMPTY_TREE:
+            cout << "BLAD: drzewo jest puste." << endl;
+            break;
+        case ERR_COMP_VALUE_MISMATCH:
+            cout << "BLAD: liczba wartosci nie zgadza sie z liczba zmiennych." << endl;
+            break;
+        case ERR_DIV_BY_ZERO:
+            cout << "BLAD: dzielenie przez zero." << endl;
+            break;
+        default:
+            if (!r.getMessage().empty()) {
+                // rozbiyjamy  komunikat na osobne linie i wypisujemy każdą jako INFO
+                string line;
+                stringstream ss(r.getMessage());
+                while (getline(ss, line, '\n')) {
+                    if (!line.empty()) cout << "UWAGA: " << line << endl;
+                }
+            }
+            break;
+    }
+}
 
 void Interface::run() {
     string line;
@@ -23,62 +47,90 @@ void Interface::run() {
 
     while (true) {
         cout << ">";
-        getline(cin, line);
+        if (!getline(cin, line)) return;
 
-        if (line == "exit") {
+        // pobieramy pierwsze słowo jako komendę, resztę jako argumenty
+        istringstream iss(line);
+        string cmd;
+        iss >> cmd;
+
+        if (cmd.empty()) continue;
+
+        if (cmd == "exit") {
             return;
         }
 
-        if (line.substr(0, 5) == "enter") {
-            // pobieramy reszte ciagu od indexu 6
-            string f = line.substr(6);
-            tree.enter(f);
+        if (cmd == "enter") {
+            string f;
+            getline(iss, f); // pobiera resztę linii (może być pusta lub zaczynać spacją)
+            if (!f.empty() && f[0] == ' ') f.erase(0, 1);
+            Result r = tree.enter(f);
+            printError(r);
         }
-        else if (line == "print") {
-            tree.print();
+        else if (cmd == "print") {
+            string formula;
+            Result r = tree.print(formula);
+            if (r.getCode() == OK) {
+                cout << formula << endl;
+            } else {
+                printError(r);
+            }
         }
-        else if (line == "vars") {
-            tree.vars();
-            cout << endl;
+        else if (cmd == "vars") {
+            vector<string> vars;
+            Result r = tree.vars(vars);
+            if (r.getCode() == OK) {
+                for (int i = 0; i < static_cast<int>(vars.size()); i++) {
+                    cout << vars[i] << " ";
+                }
+                cout << endl;
+            } else {
+                printError(r);
+            }
         }
-
-        else if (line.substr(0, 4) == "comp")
-        {
-            // od 5 znaku zaczynaja sie liczby
-            string args = line.substr(5);
+        else if (cmd == "comp") {
+            string args;
+            getline(iss, args);
+            if (!args.empty() && args[0] == ' ') args.erase(0, 1);
 
             vector<double> vals;
             string current = "";
 
-            for (int i = 0; i < args.length(); i++)
-            {
+            for (int i = 0; i < static_cast<int>(args.length()); i++) {
                 char c = args[i];
 
                 if (c == ' ') {
-                    // po napotkaniu spacji resetujemy bufor
                     if (!current.empty()) {
                         vals.push_back(atof(current.c_str()));
                         current = "";
                     }
                 }
                 else {
-                    // oddajemy znak
                     current += c;
                 }
             }
 
-            // ostatnia liczba
             if (!current.empty())
                 vals.push_back(atof(current.c_str()));
 
-            tree.comp(vals);
+            double resultVal = 0.0;
+            Result r = tree.comp(vals, resultVal);
+            if (r.getCode() == OK) {
+                cout << "wynik: " << resultVal << endl;
+            } else {
+                printError(r);
+            }
         }
-
-        else if (line.substr(0, 4) == "join") {
-            string f = line.substr(5);
-            tree.join(f);
+        else if (cmd == "join") {
+            string f;
+            getline(iss, f);
+            if (!f.empty() && f[0] == ' ') f.erase(0, 1);
+            Result r = tree.join(f);
+            printError(r);
         }
-        else cout<<"nieznana komenda! "<<endl;
+        else {
+            cout << "nieznana komenda! " << endl;
+        }
     }
 }
 

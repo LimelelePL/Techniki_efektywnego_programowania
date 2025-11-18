@@ -13,4 +13,8 @@ add_executable(Zadanie main.cpp
         TypeChecker.cpp
         TypeChecker.h
         Interface.cpp
-        Interface.h)
+        Interface.h
+        ErrorCode.h
+        Result.cpp
+        Result.h
+)
