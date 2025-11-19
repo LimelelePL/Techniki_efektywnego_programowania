@@ -5,9 +5,6 @@
 #ifndef ZADANIE_TYPE_H
 #define ZADANIE_TYPE_H
 
-
-
-#include "Parser.h"
 #include "Node.h"
 
 

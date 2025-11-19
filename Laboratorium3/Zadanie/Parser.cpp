@@ -43,7 +43,7 @@ bool Parser::cleanAndValidateVariable(string &token) {
         char c = token[i];
 
         // litery i cyfry są dozwolone
-        if (isalnum((unsigned char)c)) {
+        if (isalnum(static_cast<unsigned char>(c))) {
             cleanToken += c;
             if (isalpha(c)) containsLetter = true;
         }

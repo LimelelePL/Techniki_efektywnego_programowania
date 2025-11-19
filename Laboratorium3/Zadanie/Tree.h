@@ -40,7 +40,6 @@ public:
 private:
     Node* root;
 
-    //Type calculateType (string& value);
     vector<Node*> getUniqueVars(Node* node);
     vector<Node*> getUniqueVars(Node* node, vector<Node*>& result, set<string>& uniqueNodes);
     void print(Node *node, stringstream &ss);

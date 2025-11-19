@@ -13,13 +13,6 @@ enum Type {
 };
 
 class Node {
-private:
-    string value;
-    Type type;
-    Node* parent;
-    vector<Node*> children;
-
-
 public:
     Node();
     Node(string value, Type type);
@@ -43,6 +36,12 @@ public:
 
     vector<Node *> getChildren();
     void removeChild(Node* child);
+
+private:
+    string value;
+    Type type;
+    Node* parent;
+    vector<Node*> children;
 
 };
 

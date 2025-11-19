@@ -21,7 +21,7 @@ void Interface::printError(const Result &r) {
             break;
         default:
             if (!r.getMessage().empty()) {
-                // rozbiyjamy  komunikat na osobne linie i wypisujemy każdą jako INFO
+                // rozbiyjamy  komunikat na osobne linie i wypisujemy każdy
                 string line;
                 stringstream ss(r.getMessage());
                 while (getline(ss, line, '\n')) {
