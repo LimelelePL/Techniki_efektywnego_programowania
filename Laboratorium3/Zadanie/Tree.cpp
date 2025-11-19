@@ -10,6 +10,13 @@
 #include "Parser.h"
 #include "TypeChecker.h"
 
+#include <vector>
+#include <algorithm>
+#include <iostream>
+#include <map>
+
+using namespace std;
+
 Tree::Tree() {
     root = nullptr;
 }
@@ -394,5 +401,129 @@ Result Tree::makeWarningsResult(vector<string> &warnings, int addedCount, int po
     }
     return Result(code, msg);
 }
+
+int Tree::calcWidth(Node* n, map<Node*, int>& width) {
+    vector<Node*> ch = n->getChildren();
+
+    // liść
+    if (ch.empty()) {
+        width[n] = 1;
+        return 1;
+    }
+
+    // jeden potomek to szerokość taka jak dziecko
+    if (ch.size() == 1) {
+        int wChild = calcWidth(ch[0], width);
+        width[n] = wChild;
+        return wChild;
+    }
+
+    // wiele dzieci to szerokość to suma szerokości dzieci
+    int sum = 0;
+    for (int i = 0; i < (int)ch.size(); i++) {
+        sum += calcWidth(ch[i], width);
+    }
+
+    width[n] = sum;
+    return sum;
+}
+
+
+void Tree::assignColsDFS(Node* n, map<Node*, int>& col, int &nextX) {
+    vector<Node*> children = n->getChildren();
+
+    // jeśli liść nadajemy kolejną pozycję
+    if (children.empty()) {
+        col[n] = nextX;
+        nextX += 2;
+        return;
+    }
+
+    // najpierw pozcjnojmey dzeci
+    for (int i = 0; i < static_cast<int>(children.size()); i++) {
+        assignColsDFS(children[i], col, nextX);
+    }
+
+    // potem rodzic
+    if (children.size() == 1) {
+        // ejdno dziecko to rodzic nad nim
+        col[n] = col[children[0]];
+    } else {
+        // jak wiecej dzieic to stoi pomiedzy dziecmi i nad nimi
+        int first = col[children[0]];
+        int last  = col[children[children.size() - 1]];
+        col[n] = (first + last) / 2;
+    }
+}
+
+
+Result Tree::draw() {
+    if (root == nullptr) {
+        return Result(ERR_EMPTY_TREE, "Drzewo jest puste.");
+    }
+
+    // zbieramy wezly bfs
+    vector<vector<Node*> > levels;
+    vector<Node*> current;
+    current.push_back(root);
+
+    while (!current.empty()) {
+        levels.push_back(current);
+        vector<Node*> next;
+
+        for (int i = 0; i < static_cast<int>(current.size()); i++) {
+            vector<Node*> ch = current[i]->getChildren();
+            for (int j = 0; j < static_cast<int>(ch.size()); j++) {
+                next.push_back(ch[j]);
+            }
+        }
+
+        current = next;
+    }
+
+    int h = (int)levels.size();
+
+    // kolmuny dfsem po liscuach
+    map<Node*, int> col;
+    int nextX = 1;
+    assignColsDFS(root, col, nextX);
+
+    // maksynalna kolumna
+    int maxCol = 0;
+    for (map<Node*, int>::iterator it = col.begin(); it != col.end(); ++it) {
+        if (it->second > maxCol) maxCol = it->second;
+    }
+
+    const int SCALE = 1;
+    int totalWidth = maxCol * SCALE + 1;
+
+    vector<string> output(h, string(totalWidth, ' '));
+
+    // Wstawiamy gwiazdki
+    for (int i = 0; i < h; i++) {
+        for (int j = 0; j < static_cast<int>(levels[i].size()); j++) {
+            Node* n = levels[i][j];
+            int c = col[n] * SCALE;
+
+            if (c >= 0 && c < totalWidth) {
+                output[i][c] = '*';
+            }
+        }
+    }
+
+    for (int i = 0; i < h; i++) {
+        cout << output[i] << endl;
+    }
+
+    return Result::success();
+}
+
+
+
+
+
+
+
+
 
 

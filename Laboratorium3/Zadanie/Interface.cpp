@@ -128,6 +128,12 @@ void Interface::run() {
             Result r = tree.join(f);
             printError(r);
         }
+        else if (cmd == "draw") {
+            Result r = tree.draw();
+            if (r.getCode() != OK) printError(r);
+        }
+
+
         else {
             cout << "nieznana komenda! " << endl;
         }
