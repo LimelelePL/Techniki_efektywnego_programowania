@@ -279,15 +279,19 @@ Number Number::operator-(const Number &pOther) {
         it--;
     }
 
-    // gdyby pierwsza liczba byla zerem musimy poprawic wynikowa tablice
-    if (result.array[0] == 0 && result.length > 1) {
-        Number temp(result.length - 1, 0);
-        temp.isNegative = result.isNegative;
+    int first = 0;
+    while (first < result.length - 1 && result.array[first] == 0) first++;
+    if (first > 0) {
+        int newLen = result.length - first;
+        int *pom = new int[newLen];
 
-        for (int k = 0; k < temp.length; k++) {
-            temp.array[k] = result.array[k + 1];
+        for (int k = 0; k < newLen; k++) {
+            pom[k] = result.array[first + k];
         }
-        result = temp;
+
+        delete [] result.array;
+        result.array = pom;
+        result.length = newLen;
     }
     return result;
 }
