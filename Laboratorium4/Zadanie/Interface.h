@@ -1,19 +1,23 @@
-//
-// Created by Dominik on 13.11.2025.
-//
+#ifndef INTERFACE_H
+#define INTERFACE_H
 
-#ifndef ZADANIE_INTERFACE_H
-#define ZADANIE_INTERFACE_H
 #include "Tree.h"
+#include "Result.h"
+#include "Error.h"
+#include <string>
+#include <vector>
 
-
-class Interface {
+class Interface
+{
 public:
     void run();
+
 private:
     Tree tree;
-    static void printError(const Result &r);
+
+    void printError(Result<void, Error>& r);
+    void printError(Result<string, Error>& r);
+    void printError(Result<double, Error>& r);
 };
 
-
-#endif //ZADANIE_INTERFACE_H
+#endif

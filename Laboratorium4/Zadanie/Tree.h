@@ -6,20 +6,17 @@
 #define ZADANIE_TREE_H
 
 #include <set>
-
 #include "Node.h"
-
 #define DEFAULT_NUMBER "1"
-
 #define OP_ADD "+"
 #define OP_SUB "-"
 #define OP_MUL "*"
 #define OP_DIV "/"
 #define OP_SIN "sin"
 #define OP_COS "cos"
-
 #include <map>
 
+#include "Error.h"
 #include "Parser.h"
 #include "Result.h"
 
@@ -30,12 +27,14 @@ public:
     Tree(const Tree& copy);
     ~Tree();
 
-    Result enter(string formula);
-    Result vars(vector<string> &outVars);
-    Result comp(vector<double>& values, double &outResult);
-    Result join(string formula);
-    Result print(string &outFormula);
-    Result draw();
+    Result<void, Error> enter(const std::string &formula);
+    Result<string, Error> vars();
+    Result<double, Error> comp(std::vector<double> &values);
+    Result<void, Error>  join (const std::string &formula);
+    Result<string, Error> print();
+
+
+    Result<Tree*, Error> exportTree();
 
     Tree& operator = (const Tree& tree);
     Tree operator + (const Tree& tree);
@@ -53,11 +52,8 @@ private:
     void replaceAll(Node* node, const string& name, double value);
 
     Node* getLeaf (Node* node);
-    double compute(Node *node, ErrorCode &err);
-    Result makeWarningsResult(vector<string> &warnings, int addedCount, int pos, int size);
+    Result<double, Error> compute(Node* node);
 
-    int calcWidth(Node* n, map<Node*, int>& width);
-    void assignColsDFS(Node* n, map<Node*, int>& col, int &nextX);
 };
 
 

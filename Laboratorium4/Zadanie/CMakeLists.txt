@@ -12,7 +12,10 @@ add_executable(Zadanie main.cpp
         Parser.h
         Interface.cpp
         Interface.h
-        ErrorCode.h
-        Result.cpp
+        Error.h
         Result.h
+        Error.cpp
+        Result.tpp
+        ResultSaver.h
+        ResultSaver.tpp
 )

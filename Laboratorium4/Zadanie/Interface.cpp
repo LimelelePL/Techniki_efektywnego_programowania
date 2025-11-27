@@ -1,38 +1,35 @@
-
 #include "Interface.h"
-
 #include <iostream>
 #include <sstream>
+
+#include "ResultSaver.h"
 using namespace std;
 
-void Interface::printError(const Result &r) {
-
-    if (r.getCode() == OK) return;
-
-    switch (r.getCode()) {
-        case ERR_EMPTY_TREE:
-            cout << "BLAD: drzewo jest puste." << endl;
-            break;
-        case ERR_COMP_VALUE_MISMATCH:
-            cout << "BLAD: liczba wartosci nie zgadza sie z liczba zmiennych." << endl;
-            break;
-        case ERR_DIV_BY_ZERO:
-            cout << "BLAD: dzielenie przez zero." << endl;
-            break;
-        default:
-            if (!r.getMessage().empty()) {
-                // rozbiyjamy  komunikat na osobne linie i wypisujemy każdy
-                string line;
-                stringstream ss(r.getMessage());
-                while (getline(ss, line, '\n')) {
-                    if (!line.empty()) cout << "UWAGA: " << line << endl;
-                }
-            }
-            break;
-    }
+void Interface::printError(Result<void, Error>& r)
+{
+    for (Error* e : r.getErrors())
+        cout << "BLAD: " << e->getCode() << endl;
+}
+void Interface::printError(Result<string, Error>& r)
+{
+    for (Error* e : r.getErrors())
+        cout << "BLAD: " << e->getCode() << endl;
+}
+void Interface::printError(Result<double, Error>& r)
+{
+    for (Error* e : r.getErrors())
+        cout << "BLAD: " << e->getCode() << endl;
 }
 
-void Interface::run() {
+void Interface::run()
+{
+    string file = "C:/users/Dudek/OneDrive/Pulpit/Repozytoria/Techniki_efektywnego_programowania/Laboratorium4/Zadanie/file.txt";
+
+    { // czyszczenie pliku po starcie programu
+        std::ofstream clear(file, std::ios::trunc);
+        clear.close();
+    }
+
     string line;
 
     cout << "=== INTERFEJS DRZEWA FORMUL ===" << endl;
@@ -43,94 +40,122 @@ void Interface::run() {
     cout << " comp <v1> <v2> ..." << endl;
     cout << " join <formula>" << endl;
     cout << " exit" << endl;
+    cout << " save " << endl;
     cout << "===============================" << endl;
 
-    while (true) {
+    while (true)
+    {
         cout << ">";
         if (!getline(cin, line)) return;
 
-        // pobieramy pierwsze słowo jako komendę, resztę jako argumenty
         istringstream iss(line);
         string cmd;
         iss >> cmd;
 
         if (cmd.empty()) continue;
+        if (cmd == "exit") return;
 
-        if (cmd == "exit") {
-            return;
-        }
-
-        if (cmd == "enter") {
-            string f;
-            getline(iss, f); // pobiera resztę linii (może być pusta lub zaczynać spacją)
-            if (!f.empty() && f[0] == ' ') f.erase(0, 1);
-            Result r = tree.enter(f);
-            printError(r);
-        }
-        else if (cmd == "print") {
+        if (cmd == "enter")
+        {
             string formula;
-            Result r = tree.print(formula);
-            if (r.getCode() == OK) {
-                cout << formula << endl;
-            } else {
+            getline(iss, formula);
+            if (!formula.empty() && formula[0] == ' ')
+                formula.erase(0, 1);
+
+            Result<void, Error> r = tree.enter(formula);
+
+            if (!r.isSuccess()) {
                 printError(r);
+                ResultSaver<void>::save(r, file);
             }
         }
-        else if (cmd == "vars") {
-            vector<string> vars;
-            Result r = tree.vars(vars);
-            if (r.getCode() == OK) {
-                for (int i = 0; i < static_cast<int>(vars.size()); i++) {
-                    cout << vars[i] << " ";
-                }
+
+        else if (cmd == "print")
+        {
+            Result<string, Error> r = tree.print();
+            if (r.isSuccess())
+                cout << r.getValue() << endl;
+            else {
+                printError(r);
+                ResultSaver<string> :: save(r, file);
+            }
+        }
+
+        else if (cmd == "vars")
+        {
+            Result<string, Error> r = tree.vars();
+            if (r.isSuccess())
+            {
+                for (auto& v : r.getValue())
+                    cout << v << " ";
                 cout << endl;
-            } else {
+            }
+            else {
                 printError(r);
+                ResultSaver<string> :: save(r, file);
             }
         }
-        else if (cmd == "comp") {
-            string args;
-            getline(iss, args);
-            if (!args.empty() && args[0] == ' ') args.erase(0, 1);
 
+        else if (cmd == "comp")
+        {
             vector<double> vals;
-            string current = "";
 
-            for (int i = 0; i < static_cast<int>(args.length()); i++) {
-                char c = args[i];
+            string rest;
+            getline(iss, rest);
+            if (!rest.empty() && rest[0] == ' ')
+                rest.erase(0, 1);
 
-                if (c == ' ') {
-                    if (!current.empty()) {
-                        vals.push_back(atof(current.c_str()));
-                        current = "";
+            string tmp;
+            for (int i = 0; i < (int)rest.size(); i++)
+            {
+                if (rest[i] == ' ')
+                {
+                    if (!tmp.empty())
+                    {
+                        vals.push_back(atof(tmp.c_str()));
+                        tmp.clear();
                     }
                 }
-                else {
-                    current += c;
-                }
+                else tmp += rest[i];
             }
+            if (!tmp.empty()) vals.push_back(atof(tmp.c_str()));
 
-            if (!current.empty())
-                vals.push_back(atof(current.c_str()));
-
-            double resultVal = 0.0;
-            Result r = tree.comp(vals, resultVal);
-            if (r.getCode() == OK) {
-                cout << "wynik: " << resultVal << endl;
-            } else {
+            Result<double, Error> r = tree.comp(vals);
+            if (r.isSuccess())
+                cout << "wynik: " << r.getValue() << endl;
+            else {
                 printError(r);
+                ResultSaver<double> :: save(r, file);
             }
         }
-        else if (cmd == "join") {
-            string f;
-            getline(iss, f);
-            if (!f.empty() && f[0] == ' ') f.erase(0, 1);
-            Result r = tree.join(f);
-            printError(r);
+
+        else if (cmd == "join")
+        {
+            string formula;
+            getline(iss, formula);
+            if (!formula.empty() && formula[0] == ' ')
+                formula.erase(0, 1);
+
+            Result<void, Error> r = tree.join(formula);
+            if (!r.isSuccess()) {
+                printError(r);
+                ResultSaver<void> :: save(r, file);
+            }
         }
 
-        else {
-            cout << "nieznana komenda! " << endl;
+        else if (cmd == "save")
+        {
+            auto r = tree.exportTree();
+
+            ResultSaver<Tree*>::save(r, file);
+
+            cout << "Zapisano do tree.txt" << endl;
+        }
+
+
+        else
+        {
+            cout << "Nieznana komenda!" << endl;
         }
     }
 }
