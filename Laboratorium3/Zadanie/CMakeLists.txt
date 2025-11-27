@@ -10,8 +10,6 @@ add_executable(Zadanie main.cpp
         Tree.h
         Parser.cpp
         Parser.h
-        TypeChecker.cpp
-        TypeChecker.h
         Interface.cpp
         Interface.h
         ErrorCode.h

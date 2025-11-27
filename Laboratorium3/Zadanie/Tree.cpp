@@ -8,7 +8,6 @@
 #include <sstream>
 
 #include "Parser.h"
-#include "TypeChecker.h"
 
 #include <vector>
 #include <algorithm>
@@ -80,7 +79,7 @@ Node* Tree::buildNode(vector<string> &formula, int &pos, int &addedCount, int &s
     string value = formula[pos++];
 
     string before = value;
-    Type type = TypeChecker::calculateType(value);
+    Type type = Parser::calculateType(value);
     string after = value;
 
     if (before != after) {

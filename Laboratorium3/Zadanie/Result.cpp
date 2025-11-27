@@ -10,7 +10,6 @@ Result::Result(ErrorCode c, const std::string &msg) {
 
 }
 
-
 ErrorCode Result::getCode() const {
     return code;
 }

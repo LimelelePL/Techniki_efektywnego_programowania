@@ -6,6 +6,8 @@
 #define ZADANIE_PARSER_H
 #include <string>
 #include <vector>
+
+#include "Node.h"
 using namespace std;
 
 
@@ -14,6 +16,7 @@ public:
     static bool isValidNumber(const string &token);
     static bool cleanAndValidateVariable(string &token);
     static vector<string> split(string formula);
+    static Type calculateType(std::string &value);
 };
 
 

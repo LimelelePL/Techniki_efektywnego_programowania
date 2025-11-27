@@ -96,16 +96,6 @@ void Node::addChildren(Node *child) {
     if (child == nullptr) return;
     child->setParent(this);
     children.push_back(child);
-
-    // if (type == UNARY_OP && children.empty())
-    //     children.push_back(child);
-    // else if (type == BINARY_OP && children.size() < 2)
-    //     children.push_back(child);
-    // else if (type == TENARY_OP && children.size() < 3)
-    //     children.push_back(child);
-    // else if (type == NUMBER || type == VARIABLE || type == UNKNOWN) {
-    //     cout << "Uwaga: próba dodania dziecka do liścia '" << value << "'" << endl;
-    // }
 }
 
 bool Node::isLeaf() const {
