@@ -1,0 +1,21 @@
+//
+// Created by Dominik on 18.11.2025.
+//
+
+#ifndef ZADANIE_ERRORCODE_H
+#define ZADANIE_ERRORCODE_H
+
+
+enum ErrorCode {
+    OK = 0,
+    ERR_EMPTY_TREE,
+    ERR_COMP_VALUE_MISMATCH,
+    ERR_DIV_BY_ZERO,
+
+    WARN_CLEANED_TOKEN,
+    WARN_EXTRA_TOKENS,
+    WARN_MISSING_TOKENS
+};
+
+
+#endif //ZADANIE_ERRORCODE_H
