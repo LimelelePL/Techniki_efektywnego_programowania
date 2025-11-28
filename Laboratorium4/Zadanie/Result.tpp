@@ -1,6 +1,7 @@
 // ============================================================
 // IMPLEMENTACJA OGÓLNEGO SZABLONU Result<T,E>
 // ============================================================
+#pragma once
 
 template<typename T, typename E>
 Result<T, E>::Result(const T &value)
@@ -25,6 +26,7 @@ Result<T, E>::Result(std::vector<E *> &errList)
         if (e != nullptr)
             errors.push_back(e);
     }
+    errList.clear();
 }
 
 template<typename T, typename E>

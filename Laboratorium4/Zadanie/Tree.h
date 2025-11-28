@@ -39,6 +39,7 @@ public:
     Tree& operator = (const Tree& tree);
     Tree operator + (const Tree& tree);
 
+
 private:
     Node* root;
 

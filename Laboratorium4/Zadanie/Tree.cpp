@@ -298,12 +298,8 @@ Result<void, Error> Tree::join(const std::string &formula)
     Tree other;
     Result<void, Error> r = other.enter(formula);
 
-    if (!r.isSuccess()) {
-        return r;
-    }
-
     *this = *this + other;
-    return Result<void, Error>::ok();
+    return r;
 }
 
 //=============================================================
@@ -397,3 +393,4 @@ Result<Tree*, Error> Tree::exportTree()
 
     return Result<Tree*, Error>::ok(new Tree(*this));
 }
+
