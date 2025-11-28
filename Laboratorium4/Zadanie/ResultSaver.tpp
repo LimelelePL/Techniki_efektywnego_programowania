@@ -52,4 +52,6 @@ inline void ResultSaver<Tree*>::save(Result<Tree*, Error> &r, const string &file
         }
     }
     f.close();
+    // zwalniamy drzewo zwrocone przez exportTree (tylko do testów)
+    delete tree;
 }

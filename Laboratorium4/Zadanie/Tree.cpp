@@ -77,7 +77,10 @@ Result<void, Error> Tree::enter(const std::string &formula){
         errList.push_back(new Error(w));
     }
 
-    return Result<void, Error>::fail(errList);
+    Result<void, Error> res = Result<void, Error>::fail(errList);
+    // Result przejmuje własność przekazanych Error* i czyści errList dlatego nie suuwamy ich pozniej
+
+    return res;
 }
 
 
@@ -391,20 +394,6 @@ Result<Tree*, Error> Tree::exportTree()
     if (root == nullptr)
         return Result<Tree*, Error>::fail(new Error("Drzewo jest puste."));
 
-    // robimy klona drzewa
-    Tree* copy = new Tree(*this);
 
-    return Result<Tree*, Error>::ok(copy);
+    return Result<Tree*, Error>::ok(new Tree(*this));
 }
-
-
-
-
-
-
-
-
-
-
-
-

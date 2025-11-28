@@ -1,1 +1,2 @@
-
+BLAD: Zignorowano niedozwolone znaki w tokenach.
++ gd 3 

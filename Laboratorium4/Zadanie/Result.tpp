@@ -20,9 +20,11 @@ template<typename T, typename E>
 Result<T, E>::Result(std::vector<E *> &errList)
     : pValue(nullptr)
 {
-    for (E* e : errList)
+    // Przejmujemy własność przekazanych wskaźników zamiast robić ich kopię
+    for (E* e : errList) {
         if (e != nullptr)
-            errors.push_back(new E(*e));
+            errors.push_back(e);
+    }
 }
 
 template<typename T, typename E>
@@ -130,9 +132,13 @@ Result<void, E>::Result(E *error)
 template<typename E>
 Result<void, E>::Result(std::vector<E *> &errList)
 {
-    for (E* e : errList)
+    // Przejmujemy własność przekazanych wskaźników zamiast robić ich kopię
+    for (E* e : errList) {
         if (e != nullptr)
-            errors.push_back(new E(*e));
+            errors.push_back(e);
+    }
+
+    errList.clear();
 }
 
 template<typename E>
