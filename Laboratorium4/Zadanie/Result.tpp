@@ -4,24 +4,23 @@
 #pragma once
 
 template<typename T, typename E>
-Result<T, E>::Result(const T &value)
-    : pValue(new T(value))
-{
+Result<T, E>::Result(const T &value){
+    pValue = new T (value);
 }
 
 template<typename T, typename E>
 Result<T, E>::Result(E *error)
-    : pValue(nullptr)
 {
+    pValue = nullptr;
     if (error != nullptr)
         errors.push_back(error);
 }
 
 template<typename T, typename E>
 Result<T, E>::Result(std::vector<E *> &errList)
-    : pValue(nullptr)
 {
-    // Przejmujemy własność przekazanych wskaźników zamiast robić ich kopię
+    pValue = nullptr;
+    // Przejmujemy własność przekazanych wskaźników zamiast robić ich gleboka kopię
     for (E* e : errList) {
         if (e != nullptr)
             errors.push_back(e);
@@ -31,14 +30,13 @@ Result<T, E>::Result(std::vector<E *> &errList)
 
 template<typename T, typename E>
 Result<T, E>::Result(const Result<T, E> &other)
-    : pValue(nullptr)
 {
     if (other.pValue != nullptr)
         pValue = new T(*other.pValue);
 
-    for (E* e : other.errors)
-        if (e != nullptr)
-            errors.push_back(new E(*e));
+    for (E* e : other.errors) {
+        if (e != nullptr) errors.push_back(new E(*e));
+    }
 }
 
 template<typename T, typename E>
@@ -121,8 +119,7 @@ std::vector<E*>& Result<T, E>::getErrors()
 
 template<typename E>
 Result<void, E>::Result()
-{
-}
+= default;
 
 template<typename E>
 Result<void, E>::Result(E *error)
