@@ -4,7 +4,7 @@
 #define MOD1_UNION_H
 
 //  t1 t2 jako typy niewskaznikowe
-template<class T1, class T2>
+template<typename T1, typename T2>
 class Union {
 public:
     explicit Union(const T1 &value);
@@ -39,7 +39,7 @@ private:
 
 
 // implementacje dla Union<T1, T2>
-template<class T1, class T2>
+template<typename T1, typename T2>
 Union<T1, T2>::Union(const T1 &value) {
     pFirst = nullptr;
     pSecond = nullptr;
@@ -47,7 +47,7 @@ Union<T1, T2>::Union(const T1 &value) {
     pFirst = new T1(value);
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 Union<T1, T2>::Union(const T2 &value) {
     pFirst = nullptr;
     pSecond = nullptr;
@@ -55,7 +55,7 @@ Union<T1, T2>::Union(const T2 &value) {
     pSecond = new T2(value);
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 Union<T1, T2>::Union(const Union &other) {
     pFirst = nullptr;
     pSecond = nullptr;
@@ -67,12 +67,12 @@ Union<T1, T2>::Union(const Union &other) {
         pSecond = new T2(*other.pSecond);
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 Union<T1, T2>::~Union() {
     clear();
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 Union<T1, T2> &Union<T1, T2>::operator=(const Union &other) {
     if (this == &other)
         return *this;
@@ -89,7 +89,7 @@ Union<T1, T2> &Union<T1, T2>::operator=(const Union &other) {
     return *this;
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 Union<T1, T2> &Union<T1, T2>::operator=(const T1 &value) {
     if (isFirstActive && pFirst != nullptr) {
         *pFirst = value;
@@ -101,7 +101,7 @@ Union<T1, T2> &Union<T1, T2>::operator=(const T1 &value) {
     return *this;
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 Union<T1, T2> &Union<T1, T2>::operator=(const T2 &value) {
     if (!isFirstActive && pSecond != nullptr) {
         *pSecond = value;
@@ -113,23 +113,23 @@ Union<T1, T2> &Union<T1, T2>::operator=(const T2 &value) {
     return *this;
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 bool Union<T1, T2>::isFirst() const { return isFirstActive; }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 bool Union<T1, T2>::isSecond() const { return !isFirstActive; }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 T1 Union<T1, T2>::getFirst() const {
     return *pFirst;
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 T2 Union<T1, T2>::getSecond() const {
     return *pSecond;
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 void Union<T1, T2>::clear() {
     if (pFirst != nullptr) {
         delete pFirst;
@@ -143,12 +143,12 @@ void Union<T1, T2>::clear() {
 
 
 // blokada T1=T2
-template<class T>
+template<typename T>
 class Union<T, T>;
 
 //  SPECJALIZACJA: T1* wskaźnik, T2 zwykły typ
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 class Union<P1 *, T2> {
 public:
     explicit Union(P1 *const &ptr);
@@ -181,14 +181,14 @@ private:
     bool isFirstActive;
 };
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 Union<P1 *, T2>::Union(P1 *const &ptr) {
     pFirst = ptr;
     pSecond = nullptr;
     isFirstActive = true;
 }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 Union<P1 *, T2>::Union(const T2 &value) {
     pFirst = nullptr;
     pSecond = nullptr;
@@ -196,7 +196,7 @@ Union<P1 *, T2>::Union(const T2 &value) {
     pSecond = new T2(value);
 }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 Union<P1 *, T2>::Union(const Union &other) {
     pFirst = nullptr;
     pSecond = nullptr;
@@ -209,12 +209,12 @@ Union<P1 *, T2>::Union(const Union &other) {
     }
 }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 Union<P1 *, T2>::~Union() {
     clearSecond();
 }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 Union<P1 *, T2> &Union<P1 *, T2>::operator=(const Union &other) {
     if (this == &other)
         return *this;
@@ -235,7 +235,7 @@ Union<P1 *, T2> &Union<P1 *, T2>::operator=(const Union &other) {
     return *this;
 }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 Union<P1 *, T2> &Union<P1 *, T2>::operator=(P1 *const &ptr) {
     clearSecond();
     pFirst = ptr;
@@ -243,7 +243,7 @@ Union<P1 *, T2> &Union<P1 *, T2>::operator=(P1 *const &ptr) {
     return *this;
 }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 Union<P1 *, T2> &Union<P1 *, T2>::operator=(const T2 &value) {
     if (!isFirstActive && pSecond != nullptr) {
         *pSecond = value;
@@ -255,19 +255,19 @@ Union<P1 *, T2> &Union<P1 *, T2>::operator=(const T2 &value) {
     return *this;
 }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 bool Union<P1 *, T2>::isFirst() const { return isFirstActive; }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 bool Union<P1 *, T2>::isSecond() const { return !isFirstActive; }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 P1 *Union<P1 *, T2>::getFirst() const { return pFirst; }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 T2 Union<P1 *, T2>::getSecond() const { return *pSecond; }
 
-template<class P1, class T2>
+template<typename P1, typename T2>
 void Union<P1 *, T2>::clearSecond() {
     if (pSecond != nullptr) {
         delete pSecond;
@@ -278,7 +278,7 @@ void Union<P1 *, T2>::clearSecond() {
 
 //  SPECJALIZACJA: T1 zwykły typ, T2* wskaźnik
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 class Union<T1, P2 *> {
 public:
     explicit Union(const T1 &value);
@@ -311,7 +311,7 @@ private:
     bool isFirstActive;
 };
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 Union<T1, P2 *>::Union(const T1 &value) {
     pFirst = nullptr;
     pSecond = nullptr;
@@ -319,14 +319,14 @@ Union<T1, P2 *>::Union(const T1 &value) {
     pFirst = new T1(value);
 }
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 Union<T1, P2 *>::Union(P2 *const &ptr) {
     pFirst = nullptr;
     pSecond = ptr;
     isFirstActive = false;
 }
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 Union<T1, P2 *>::Union(const Union &other) {
     pFirst = nullptr;
     pSecond = nullptr;
@@ -338,12 +338,12 @@ Union<T1, P2 *>::Union(const Union &other) {
     }
 }
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 Union<T1, P2 *>::~Union() {
     clearFirst();
 }
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 Union<T1, P2 *> &Union<T1, P2 *>::operator=(const Union &other) {
     if (this == &other)
         return *this;
@@ -365,7 +365,7 @@ Union<T1, P2 *> &Union<T1, P2 *>::operator=(const Union &other) {
 }
 
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 Union<T1, P2 *> &Union<T1, P2 *>::operator=(const T1 &value) {
     if (isFirstActive && pFirst != nullptr) {
         *pFirst = value;
@@ -377,7 +377,7 @@ Union<T1, P2 *> &Union<T1, P2 *>::operator=(const T1 &value) {
     return *this;
 }
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 Union<T1, P2 *> &Union<T1, P2 *>::operator=(P2 *const &ptr) {
     clearFirst();
     pSecond = ptr;
@@ -385,19 +385,19 @@ Union<T1, P2 *> &Union<T1, P2 *>::operator=(P2 *const &ptr) {
     return *this;
 }
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 bool Union<T1, P2 *>::isFirst() const { return isFirstActive; }
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 bool Union<T1, P2 *>::isSecond() const { return !isFirstActive; }
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 T1 Union<T1, P2 *>::getFirst() const { return *pFirst; }
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 P2 *Union<T1, P2 *>::getSecond() const { return pSecond; }
 
-template<class T1, class P2>
+template<typename T1, typename P2>
 void Union<T1, P2 *>::clearFirst() {
     if (pFirst != nullptr) {
         delete pFirst;
@@ -408,7 +408,7 @@ void Union<T1, P2 *>::clearFirst() {
 
 //  SPECJALIZACJA: P1*, P2*
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 class Union<P1 *, P2 *> {
 public:
     explicit Union(P1 *const &ptr);
@@ -439,21 +439,21 @@ private:
     bool isFirstActive;
 };
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 Union<P1 *, P2 *>::Union(P1 *const &ptr) {
     pFirst = ptr;
     pSecond = nullptr;
     isFirstActive = true;
 }
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 Union<P1 *, P2 *>::Union(P2 *const &ptr) {
     pFirst = nullptr;
     pSecond = ptr;
     isFirstActive = false;
 }
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 Union<P1 *, P2 *>::Union(const Union &other) {
     pFirst = nullptr;
     pSecond = nullptr;
@@ -464,11 +464,11 @@ Union<P1 *, P2 *>::Union(const Union &other) {
         pSecond = other.pSecond;
 }
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 Union<P1 *, P2 *>::~Union() {
 }
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 Union<P1 *, P2 *> &Union<P1 *, P2 *>::operator=(const Union &other) {
     if (this == &other)
         return *this;
@@ -479,7 +479,7 @@ Union<P1 *, P2 *> &Union<P1 *, P2 *>::operator=(const Union &other) {
     return *this;
 }
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 Union<P1 *, P2 *> &Union<P1 *, P2 *>::operator=(P1 *const &ptr) {
     pFirst = ptr;
     pSecond = nullptr;
@@ -487,7 +487,7 @@ Union<P1 *, P2 *> &Union<P1 *, P2 *>::operator=(P1 *const &ptr) {
     return *this;
 }
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 Union<P1 *, P2 *> &Union<P1 *, P2 *>::operator=(P2 *const &ptr) {
     pSecond = ptr;
     pFirst = nullptr;
@@ -495,16 +495,17 @@ Union<P1 *, P2 *> &Union<P1 *, P2 *>::operator=(P2 *const &ptr) {
     return *this;
 }
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 bool Union<P1 *, P2 *>::isFirst() const { return isFirstActive; }
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 bool Union<P1 *, P2 *>::isSecond() const { return !isFirstActive; }
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 P1 *Union<P1 *, P2 *>::getFirst() const { return pFirst; }
 
-template<class P1, class P2>
+template<typename P1, typename P2>
 P2 *Union<P1 *, P2 *>::getSecond() const { return pSecond; }
 
 #endif // MOD1_UNION_H
+
