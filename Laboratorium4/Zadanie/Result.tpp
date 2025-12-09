@@ -31,6 +31,7 @@ Result<T, E>::Result(std::vector<E *> &errList)
 template<typename T, typename E>
 Result<T, E>::Result(const Result<T, E> &other)
 {
+    pValue = nullptr;
     if (other.pValue != nullptr)
         pValue = new T(*other.pValue);
 

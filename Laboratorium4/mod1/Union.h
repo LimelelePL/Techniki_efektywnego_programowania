@@ -61,9 +61,9 @@ Union<T1, T2>::Union(const Union &other) {
     pSecond = nullptr;
     isFirstActive = other.isFirstActive;
 
-    if (other.isFirstActive && other.pFirst != 0)
+    if (other.isFirstActive && other.pFirst != nullptr)
         pFirst = new T1(*other.pFirst);
-    else if (!other.isFirstActive && other.pSecond != 0)
+    else if (!other.isFirstActive && other.pSecond != nullptr)
         pSecond = new T2(*other.pSecond);
 }
 
@@ -211,7 +211,6 @@ Union<P1 *, T2>::Union(const Union &other) {
 
 template<class P1, class T2>
 Union<P1 *, T2>::~Union() {
-
     clearSecond();
 }
 
@@ -402,7 +401,7 @@ template<class T1, class P2>
 void Union<T1, P2 *>::clearFirst() {
     if (pFirst != nullptr) {
         delete pFirst;
-        pFirst = 0;
+        pFirst = nullptr;
     }
 }
 
