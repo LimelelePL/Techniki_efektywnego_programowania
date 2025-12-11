@@ -41,6 +41,15 @@ int main() {
     cout << endl;
 
 
+    Tree::resetCounters();
+    Tree a1;
+    Tree b1;
+
+    Tree c1 = (a1 + b1);
+    Tree::printCounters();
+
+
+
     //Interface interface;
     //interface.run();
 

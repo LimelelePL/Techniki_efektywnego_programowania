@@ -26,7 +26,7 @@ public:
     Tree();
     Tree(const Tree& copy);
     ~Tree();
-    Tree(Tree&& other);
+    Tree(Tree&& other) noexcept;
 
     Result<void, Error> enter(const std::string &formula);
     Result<string, Error> vars();

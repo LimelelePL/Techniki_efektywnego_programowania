@@ -33,18 +33,18 @@ Tree::~Tree() {
 }
 
 Tree::Tree(const Tree &copy) {
-    copyCtorCount++;
+    ++copyCtorCount;
     root = copy.root ? copy.root->clone() : nullptr;
 }
 
-Tree::Tree(Tree &&other) {
-    moveCtorCount++;
+Tree::Tree(Tree &&other) noexcept {
+    ++moveCtorCount;
     root = other.root;
     other.root = nullptr;
 }
 
 Tree Tree::operator=(const Tree &tree) {
-    copyAssignCount++;
+    ++copyAssignCount;
     if (this == &tree) return *this;
 
     delete root;
@@ -87,7 +87,7 @@ Tree Tree::operator+(const Tree &tree) {
     if (parent == nullptr) {
         delete result.root;
         result.root = otherRoot;
-        return result;
+        return std::move(result);
     }
 
     parent->removeChild(leaf);

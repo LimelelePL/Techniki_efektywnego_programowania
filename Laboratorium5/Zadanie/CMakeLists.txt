@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.0)
 project(Zadanie)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Zadanie main.cpp
         Tree/Node.cpp
