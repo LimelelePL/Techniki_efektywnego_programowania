@@ -18,9 +18,12 @@ public:
     ~SmartPointer();
     SmartPointer(const SmartPointer& other);
 
+    SmartPointer(SmartPointer&& other) noexcept;
+
     T& operator *();
     T* operator ->();
     SmartPointer& operator =(const SmartPointer& other);
+    SmartPointer& operator =(SmartPointer&& other) noexcept;
 
 private:
     T* pointer;
@@ -73,6 +76,33 @@ SmartPointer<T> & SmartPointer<T>::operator=(const SmartPointer &other) {
     pointer = other.pointer;
     counter = other.counter;
     counter->add();
+
+    return *this;
+}
+
+template<typename T>
+SmartPointer<T>::SmartPointer(SmartPointer &&other) noexcept {
+    pointer = other.pointer;
+    counter = other.counter;
+    other.counter = nullptr;
+    other.pointer = nullptr;
+}
+
+template<typename T>
+SmartPointer<T> & SmartPointer<T>::operator=(SmartPointer &&other) noexcept {
+    if (this == &other) return *this;
+
+    if (counter != nullptr) {
+        if (counter->dec() == 0) {
+            pointer = nullptr;
+            counter = nullptr;
+        }
+    }
+
+    pointer = other.pointer;
+    counter = other.counter;
+    other.pointer = nullptr;
+    other.counter = nullptr;
 
     return *this;
 }

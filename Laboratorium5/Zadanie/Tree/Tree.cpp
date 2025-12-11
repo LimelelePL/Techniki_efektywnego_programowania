@@ -74,13 +74,11 @@ Tree Tree::operator+(const Tree &tree) {
 
     Node *otherRoot = tree.root->clone();
 
-    // jak nasze drzewo jest puste, to wynikiem jest po prostu kopia tree
     if (result.root == nullptr) {
         result.root = otherRoot;
-        return result;
+        return std::move(result);
     }
 
-    // zamiast danego liscia przypinamy korzen drugiego drzewa
     Node* leaf = result.getLeaf(result.root);
     Node* parent = leaf->getParent();
 
@@ -92,11 +90,11 @@ Tree Tree::operator+(const Tree &tree) {
 
     parent->removeChild(leaf);
     delete leaf;
-
     parent->addChildren(otherRoot);
 
-    return result;
+    return std::move(result);
 }
+
 
 void Tree::resetCounters() {
     copyCtorCount = copyAssignCount = moveCtorCount = moveAssignCount = 0;
@@ -374,12 +372,10 @@ void Tree::print(Node *node, stringstream &ss) {
 
 // =============================JOIN=====================================
 
-Result<void, Error> Tree::join(const std::string &formula)
-{
+Result<void, Error> Tree::join(const std::string &formula) {
     Tree other;
     Result<void, Error> r = other.enter(formula);
-
-    *this = *this + other;
+    *this = std::move(*this + other);  // move z wyniku operator+
     return r;
 }
 
