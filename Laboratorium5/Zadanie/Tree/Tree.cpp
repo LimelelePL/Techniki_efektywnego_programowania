@@ -43,7 +43,17 @@ Tree::Tree(Tree &&other) {
     other.root = nullptr;
 }
 
-Tree& Tree::operator=(Tree &&other) noexcept {
+Tree Tree::operator=(const Tree &tree) {
+    copyAssignCount++;
+    if (this == &tree) return *this;
+
+    delete root;
+    root = tree.root->clone();
+
+    return *this;
+}
+
+Tree Tree::operator=(Tree &&other) noexcept {
     ++moveAssignCount;
     if (this == &other) return *this;
 
@@ -54,15 +64,6 @@ Tree& Tree::operator=(Tree &&other) noexcept {
     return *this;
 }
 
-Tree Tree::operator=(const Tree &tree) {
-    copyAssignCount++;
-    if (this == &tree) return *this;
-
-    delete root;
-    root = tree.root->clone();
-
-    return *this;
-}
 
 Tree Tree::operator+(const Tree &tree) {
     Tree result(*this);

@@ -42,9 +42,11 @@ SmartPointer<T>::SmartPointer(T *pointer) {
 
 template<typename T>
 SmartPointer<T>::~SmartPointer() {
-    if (counter->get() == 0 ) {
-        delete pointer;
-        delete counter;
+    if (counter!=nullptr) {
+        if (counter->dec() == 0 ) {
+            delete pointer;
+            delete counter;
+        }
     }
 }
 
@@ -52,7 +54,7 @@ template<typename T>
 SmartPointer<T>::SmartPointer(const SmartPointer &other) {
     pointer = other.pointer;
     counter = other.counter;
-    counter->add();
+    if (counter!=nullptr) counter->add();
 }
 
 template<typename T>

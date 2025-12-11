@@ -37,7 +37,7 @@ public:
 
     Result<Tree*, Error> exportTree();
 
-    Tree& operator = (Tree &&other) noexcept ;
+    Tree operator = (Tree &&other) noexcept ;
     Tree operator = (const Tree& tree);
     Tree operator + (const Tree& tree);
 
