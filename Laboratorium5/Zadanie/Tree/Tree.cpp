@@ -39,7 +39,7 @@ Tree::Tree(const Tree &copy) {
 
 Tree::Tree(Tree &&other) noexcept {
     ++moveCtorCount;
-    root = other.root;
+    root =  other.root;
     other.root = nullptr;
 }
 
@@ -66,6 +66,7 @@ Tree Tree::operator=(Tree &&other) noexcept {
 
 
 Tree Tree::operator+(const Tree &tree) {
+    //kopia 1
     Tree result(*this);
 
     if (tree.root == nullptr) {

@@ -66,7 +66,7 @@ SmartPointer<T> & SmartPointer<T>::operator=(const SmartPointer &other) {
         return *this;
     }
 
-    if (pointer!=nullptr) {
+    if (counter!=nullptr) {
         if (counter->dec() == 0) {
             delete pointer;
             delete counter;
@@ -75,7 +75,7 @@ SmartPointer<T> & SmartPointer<T>::operator=(const SmartPointer &other) {
 
     pointer = other.pointer;
     counter = other.counter;
-    counter->add();
+    if (counter != nullptr) counter->add();
 
     return *this;
 }
@@ -116,3 +116,5 @@ template<typename T>
 T * SmartPointer<T>::operator->() {
     return pointer;
 }
+
+

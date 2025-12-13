@@ -1,8 +1,17 @@
 
 #include <iostream>
 
+#include "SmartPointer/SmartPointer.h"
 #include "Tree/Interface.h"
 int main() {
+
+    SmartPointer ptr (new int (10));
+    cout<<"ptr : " << *ptr << endl;
+    SmartPointer ptr1 = ptr;
+    cout<<"ptr1 : " << *ptr1 << endl;
+    SmartPointer ptr2 = std::move(ptr);
+    cout<<"ptr1: " << *ptr1 << endl;
+
 
     Tree::resetCounters();
     Tree a;
@@ -39,15 +48,6 @@ int main() {
     j.join("* 9 9");
     Tree::printCounters();
     cout << endl;
-
-
-    Tree::resetCounters();
-    Tree a1;
-    Tree b1;
-
-    Tree c1 = (a1 + b1);
-    Tree::printCounters();
-
 
 
     //Interface interface;
