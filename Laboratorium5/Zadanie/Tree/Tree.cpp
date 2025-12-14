@@ -37,11 +37,11 @@ Tree::Tree(const Tree &copy) {
     root = copy.root ? copy.root->clone() : nullptr;
 }
 
-Tree::Tree(Tree &&other) noexcept {
-    ++moveCtorCount;
-    root =  other.root;
-    other.root = nullptr;
-}
+// Tree::Tree(Tree &&other) noexcept {
+//     ++moveCtorCount;
+//     root =  other.root;
+//     other.root = nullptr;
+// }
 
 Tree Tree::operator=(const Tree &tree) {
     ++copyAssignCount;
@@ -53,24 +53,23 @@ Tree Tree::operator=(const Tree &tree) {
     return *this;
 }
 
-Tree Tree::operator=(Tree &&other) noexcept {
-    ++moveAssignCount;
-    if (this == &other) return *this;
-
-    delete root;
-    root = other.root;
-    other.root = nullptr;
-
-    return *this;
-}
-
+// Tree& Tree::operator=(Tree &&other) noexcept {
+//     ++moveAssignCount;
+//     if (this == &other) return *this;
+//
+//     delete root;
+//     root = other.root;
+//     other.root = nullptr;
+//
+//     return *this;
+// }
 
 Tree Tree::operator+(const Tree &tree) {
-    //kopia 1
+
     Tree result(*this);
 
     if (tree.root == nullptr) {
-        return result;
+        return std::move(result);
     }
 
     Node *otherRoot = tree.root->clone();
@@ -376,7 +375,7 @@ void Tree::print(Node *node, stringstream &ss) {
 Result<void, Error> Tree::join(const std::string &formula) {
     Tree other;
     Result<void, Error> r = other.enter(formula);
-    *this = std::move(*this + other);  // move z wyniku operator+
+    *this = *this + other;  // move z wyniku operator+
     return r;
 }
 

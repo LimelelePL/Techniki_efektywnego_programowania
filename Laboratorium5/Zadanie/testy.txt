@@ -1,0 +1,36 @@
+
+move semantics vs bez
+a (b)
+konstruktor move: 0
+konstruktor copy: 1
+operator przypisania z move : 0
+operator przypisania : 0
+
+a = b
+konstruktor move: 0
+konstruktor copy: 1
+operator przypisania z move : 0
+operator przypisania : 1
+
+a = b + c
+konstruktor move: 2 / 0
+konstruktor copy: 1 / 3
+operator przypisania z move : 0 / 0
+operator przypisania : 0 / 0
+
+a = std::move(b)
+konstruktor move: 0 / 0
+konstruktor copy: 0 / 1
+operator przypisania z move : 1 / 0
+operator przypisania : 0 / 1
+
+join
+konstruktor move: 1 / 0
+konstruktor copy: 1 / 3
+operator przypisania z move : 1 / 0
+operator przypisania : 0 / 1
+
+
+
+
+

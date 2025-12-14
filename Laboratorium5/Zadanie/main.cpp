@@ -4,15 +4,15 @@
 #include "SmartPointer/SmartPointer.h"
 #include "Tree/Interface.h"
 int main() {
-
-    SmartPointer ptr (new int (10));
+    SmartPointer<int> ptr (new int (10));
     cout<<"ptr : " << *ptr << endl;
-    SmartPointer ptr1 = ptr;
+    SmartPointer<int> ptr1 = ptr;
     cout<<"ptr1 : " << *ptr1 << endl;
-    SmartPointer ptr2 = std::move(ptr);
+    SmartPointer<int> ptr2 = std::move(ptr);
     cout<<"ptr1: " << *ptr1 << endl;
 
 
+    cout<<"a (b)"<<endl;
     Tree::resetCounters();
     Tree a;
     a.enter("+ 1 2");
@@ -20,6 +20,7 @@ int main() {
     Tree::printCounters();
     cout<<endl;
 
+    cout<<"a = b"<<endl;
     Tree::resetCounters();
     Tree c;
     c.enter("* 3 4");
@@ -28,6 +29,7 @@ int main() {
     Tree::printCounters();
     cout<<endl;
 
+    cout<<"a = b + c"<<endl;
     Tree::resetCounters();
     Tree t1; t1.enter("+ 1 2");
     Tree t2; t2.enter("* 3 4");
@@ -35,6 +37,7 @@ int main() {
     Tree::printCounters();
     cout<<endl;
 
+    cout<<"a = std::move(b)"<<endl;
     Tree::resetCounters();
     Tree m1; m1.enter("+ 5 6");
     Tree m2; m2.enter("* 7 8");
@@ -42,7 +45,7 @@ int main() {
     Tree::printCounters();
     cout << endl;
 
-
+    cout<<"join"<<endl;
     Tree::resetCounters();
     Tree j; j.enter("+ 1 2");
     j.join("* 9 9");

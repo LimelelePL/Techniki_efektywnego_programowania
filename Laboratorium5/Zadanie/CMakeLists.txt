@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 4.0)
 project(Zadanie)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-elide-constructors")
 
 add_executable(Zadanie main.cpp
         Tree/Node.cpp
