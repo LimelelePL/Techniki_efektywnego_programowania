@@ -11,7 +11,7 @@ public:
     RefCounter();
     int add();
     int dec();
-    int get();
+    int get() const;
 
 private:
     int count;

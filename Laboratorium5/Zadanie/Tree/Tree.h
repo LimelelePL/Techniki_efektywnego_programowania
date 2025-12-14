@@ -26,7 +26,7 @@ public:
     Tree();
     Tree(const Tree& copy);
     ~Tree();
-    //Tree(Tree&& other) noexcept;
+    Tree(Tree&& other) noexcept;
 
     Result<void, Error> enter(const std::string &formula);
     Result<string, Error> vars();
@@ -37,7 +37,7 @@ public:
 
     Result<Tree*, Error> exportTree();
 
-    //Tree& operator = (Tree &&other) noexcept ;
+    Tree& operator = (Tree &&other) noexcept ;
     Tree operator = (const Tree& tree);
     Tree operator + (const Tree& tree);
 

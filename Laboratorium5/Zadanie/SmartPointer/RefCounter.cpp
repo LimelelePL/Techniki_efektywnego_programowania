@@ -18,6 +18,6 @@ int RefCounter::dec() {
     return --count;
 }
 
-int RefCounter::get() {
+int RefCounter::get() const {
     return count;
 }

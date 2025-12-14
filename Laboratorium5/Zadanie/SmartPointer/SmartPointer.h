@@ -61,6 +61,14 @@ SmartPointer<T>::SmartPointer(const SmartPointer &other) {
 }
 
 template<typename T>
+SmartPointer<T>::SmartPointer(SmartPointer &&other) noexcept {
+    pointer = other.pointer;
+    counter = other.counter;
+    other.counter = nullptr;
+    other.pointer = nullptr;
+}
+
+template<typename T>
 SmartPointer<T> & SmartPointer<T>::operator=(const SmartPointer &other) {
     if (this == &other) {
         return *this;
@@ -75,17 +83,10 @@ SmartPointer<T> & SmartPointer<T>::operator=(const SmartPointer &other) {
 
     pointer = other.pointer;
     counter = other.counter;
+
     if (counter != nullptr) counter->add();
 
     return *this;
-}
-
-template<typename T>
-SmartPointer<T>::SmartPointer(SmartPointer &&other) noexcept {
-    pointer = other.pointer;
-    counter = other.counter;
-    other.counter = nullptr;
-    other.pointer = nullptr;
 }
 
 template<typename T>
@@ -103,6 +104,8 @@ SmartPointer<T> & SmartPointer<T>::operator=(SmartPointer &&other) noexcept {
     counter = other.counter;
     other.pointer = nullptr;
     other.counter = nullptr;
+
+    if (counter != nullptr) counter->add();
 
     return *this;
 }

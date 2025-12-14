@@ -37,11 +37,11 @@ Tree::Tree(const Tree &copy) {
     root = copy.root ? copy.root->clone() : nullptr;
 }
 
-// Tree::Tree(Tree &&other) noexcept {
-//     ++moveCtorCount;
-//     root =  other.root;
-//     other.root = nullptr;
-// }
+Tree::Tree(Tree &&other) noexcept {
+    ++moveCtorCount;
+    root =  other.root;
+    other.root = nullptr;
+}
 
 Tree Tree::operator=(const Tree &tree) {
     ++copyAssignCount;
@@ -53,30 +53,30 @@ Tree Tree::operator=(const Tree &tree) {
     return *this;
 }
 
-// Tree& Tree::operator=(Tree &&other) noexcept {
-//     ++moveAssignCount;
-//     if (this == &other) return *this;
-//
-//     delete root;
-//     root = other.root;
-//     other.root = nullptr;
-//
-//     return *this;
-// }
+Tree& Tree::operator=(Tree &&other) noexcept {
+    ++moveAssignCount;
+    if (this == &other) return *this;
+
+    delete root;
+    root = other.root;
+    other.root = nullptr;
+
+    return *this;
+}
 
 Tree Tree::operator+(const Tree &tree) {
 
     Tree result(*this);
 
     if (tree.root == nullptr) {
-        return std::move(result);
+        return result;
     }
 
     Node *otherRoot = tree.root->clone();
 
     if (result.root == nullptr) {
         result.root = otherRoot;
-        return std::move(result);
+        return result;
     }
 
     Node* leaf = result.getLeaf(result.root);
@@ -85,14 +85,14 @@ Tree Tree::operator+(const Tree &tree) {
     if (parent == nullptr) {
         delete result.root;
         result.root = otherRoot;
-        return std::move(result);
+        return result;
     }
 
     parent->removeChild(leaf);
     delete leaf;
     parent->addChildren(otherRoot);
 
-    return std::move(result);
+    return result;
 }
 
 
