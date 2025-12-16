@@ -5,6 +5,7 @@
 #ifndef ZADANIE_SMARTPOINTER_H
 #define ZADANIE_SMARTPOINTER_H
 #include <functional>
+#include <vector>
 
 #include "RefCounter.h"
 
@@ -104,8 +105,6 @@ SmartPointer<T> & SmartPointer<T>::operator=(SmartPointer &&other) noexcept {
     counter = other.counter;
     other.pointer = nullptr;
     other.counter = nullptr;
-
-    if (counter != nullptr) counter->add();
 
     return *this;
 }
