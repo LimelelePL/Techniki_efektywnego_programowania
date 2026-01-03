@@ -52,7 +52,7 @@ double Evaluator::evaluate(const std::vector<int>& genotype) const {
     }
 
     // obliczamy wartość naszej funkcji przystosowania
-    int totalDist = 0;
+    double totalDist = 0;
     int totalPenalty = 0;
     for (int i = 0; i<numVehicles; i++) {
         if (lastCustomerOfVehicle[i] != depot) {
