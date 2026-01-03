@@ -19,13 +19,25 @@ GeneticAlgorithm::GeneticAlgorithm(Evaluator &eval,int popSize, double crossProb
 }
 
 void GeneticAlgorithm::run() {
+    //generujemy popsize gotowych rozwiazan
+    genRandomPopulation();
     for (int i = 0; i<maxIterations; i++) {
-        //generujemy popsize gotowych rozwiazan i dla kazdego z nich obliczamy fitness
-        genRandomPopulation();
+        //dla kazdego z nich obliczamy fitness
+        for (Individual in : population) {
+            if (in.getFitnes()<0) {
+                in.initFitness(eval);
+            }
+        }
         // wykonujemy krzyzowanie
         crossPopulation();
-
+        // mutacja
+        for (Individual in : population) {
+                in.mutate(mutProb, gen);
+        }
     }
+
+    // toDO: pobieramy najlepsze rozwiazanie
+
 }
 
 void GeneticAlgorithm::crossPopulation() {
