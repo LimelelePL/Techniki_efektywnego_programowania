@@ -4,7 +4,6 @@
 
 #ifndef MINIPROJEKT_EVALUATOR_H
 #define MINIPROJEKT_EVALUATOR_H
-#include "Individual.h"
 #include "ProblemLoader.hpp"
 using namespace LcVRPContest;
 

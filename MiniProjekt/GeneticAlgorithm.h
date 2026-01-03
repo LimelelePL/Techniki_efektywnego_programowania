@@ -12,22 +12,27 @@
 class GeneticAlgorithm {
 public:
     GeneticAlgorithm(Evaluator &eval, int popSize, double crossProb, double mutProb, int maxIterations);
+    ~GeneticAlgorithm();
     void run();
     std::vector<int> getBestSolution;
+    void printBest();
+
 
 private:
     int popSize;
     double crossProb;
     double mutProb;
     int maxIterations;
-    std::vector<int> bestSolution;
+    Individual* bestSolution;
     std::vector<Individual> population;
     Evaluator& eval;
     RandomGenerator gen;
 
+    void calcFitness();
     void crossPopulation();
     void genRandomPopulation();
     Individual& selectParents();
+    Individual& currentIterationBestSolution();
 };
 
 

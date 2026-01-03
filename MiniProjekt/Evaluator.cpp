@@ -67,7 +67,7 @@ double Evaluator::evaluate(const std::vector<int>& genotype) const {
         }
     }
 
-    return 1/(totalDist+totalPenalty);
+    return 1.0/(totalDist+totalPenalty);
 }
 
 int Evaluator::getNumVehicles() const {

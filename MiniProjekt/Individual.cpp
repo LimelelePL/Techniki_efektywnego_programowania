@@ -26,8 +26,7 @@ double Individual::initFitness(const Evaluator &eval) {
 }
 
 // decyzja o tym czy krzyzowac czy nie bedzie w geneticAlgotirthm
-std::pair<Individual, Individual> Individual::cross(const Individual &other) const {
-    RandomGenerator generator;
+std::pair<Individual, Individual> Individual::cross(const Individual &other, RandomGenerator& generator) const {
     int size = static_cast<int>(genotype.size());
     int cutPoint =generator.nextInt(1,size-1);
 
@@ -47,17 +46,17 @@ std::pair<Individual, Individual> Individual::cross(const Individual &other) con
     return {child1, child2};
 }
 
-void Individual::mutate(double mutProb, RandomGenerator& generator) {
+void Individual::mutate(double mutProb, RandomGenerator& generator, int numVehicles) {
     // wybieramy unikalne geny
-    std::set<int> uniqueGenes(genotype.begin(), genotype.end());
-    std::vector<int> availableGenes(uniqueGenes.begin(), uniqueGenes.end());
+    // std::set<int> uniqueGenes(genotype.begin(), genotype.end());
+    // std::vector<int> availableGenes(uniqueGenes.begin(), uniqueGenes.end());
 
-    for (int & i : genotype) {
+    for (int & gene : genotype) {
         // mutuje tylko ten gen który spełnia warunek p<=mutProb
         bool shouldMutate = generator.nextDouble(0,1) <= mutProb;
         if (shouldMutate) {
-            int newGen = availableGenes[generator.nextInt(0,static_cast<int>(availableGenes.size())-1)];
-            i = newGen;
+            int newGen = generator.nextInt(0, numVehicles - 1);
+            gene = newGen;
             // po zmianie choc jednego genu przystosowanie musi byc obliczone ponownie
             this->fitness = -1;
         }
@@ -68,7 +67,7 @@ const std::vector<int> &Individual::getGenotype() const {
     return genotype;
 }
 
-double Individual::getFitnes() {
+double Individual::getFitnes() const {
     return fitness;
 }
 

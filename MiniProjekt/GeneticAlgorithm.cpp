@@ -6,45 +6,49 @@
 
 #include <iostream>
 
-GeneticAlgorithm::GeneticAlgorithm(Evaluator &eval,int popSize, double crossProb, double mutProb, int maxIterations):
-     crossProb(crossProb), mutProb(mutProb), maxIterations(maxIterations), eval(eval){
+GeneticAlgorithm::GeneticAlgorithm(Evaluator &eval,int popSize, double crossProb, double mutProb, int maxIterations) : crossProb(
+    crossProb), mutProb(mutProb), maxIterations(maxIterations), bestSolution(nullptr), eval(eval) {
 
     if (popSize < 2) {
-        std::cerr << " populacja musi mieć co najmniej 2 osobników! Ustawiam 10." << std::endl;
         this->popSize = 10;
     } else {
         this->popSize = popSize;
     }
+}
 
+GeneticAlgorithm::~GeneticAlgorithm() {
+    delete bestSolution;
 }
 
 void GeneticAlgorithm::run() {
     //generujemy popsize gotowych rozwiazan
     genRandomPopulation();
-    for (int i = 0; i<maxIterations; i++) {
-        //dla kazdego z nich obliczamy fitness
-        for (Individual in : population) {
-            if (in.getFitnes()<0) {
-                in.initFitness(eval);
-            }
-        }
-        // wykonujemy krzyzowanie
+
+    for (int i = 0; i < maxIterations; i++) {
+
+        // krzyzowanie ustawia fitness krzyzowanych na -1
         crossPopulation();
-        // mutacja
-        for (Individual in : population) {
-                in.mutate(mutProb, gen);
+
+        for (Individual &in: population) {
+            in.mutate(mutProb, gen, eval.getNumVehicles()); // mutacja tez na -1
         }
+
+        calcFitness();
+
+        Individual &currentBest = currentIterationBestSolution();
+        if (bestSolution == nullptr || currentBest.getFitnes() > bestSolution->getFitnes()) {
+            delete bestSolution;
+            bestSolution = new Individual(currentBest);
+        }
+
     }
-
-    // toDO: pobieramy najlepsze rozwiazanie
-
 }
+
 
 void GeneticAlgorithm::crossPopulation() {
     vector<Individual> newPopulation;
-    int newPopsize = 0;
 
-    while (newPopsize < popSize){
+    while (newPopulation.size() < popSize){
         double prob = gen.nextDouble(0,1);
 
         Individual& parent1 = selectParents();
@@ -54,15 +58,16 @@ void GeneticAlgorithm::crossPopulation() {
             newPopulation.push_back(parent1);
             newPopulation.push_back(parent2);
         } else {
-            pair<Individual,Individual> crossed = parent1.cross(parent2);
+            pair<Individual,Individual> crossed = parent1.cross(parent2, gen);
+
+            // dodajemy do nowej populacji
             newPopulation.push_back(crossed.first);
             newPopulation.push_back(crossed.second);
         }
-        newPopsize+=2;
     }
 
     // gdyby przekroczylo popsize
-    if (newPopsize > popSize) {
+    if (newPopulation.size() > popSize) {
         newPopulation.pop_back();
     }
 
@@ -70,11 +75,9 @@ void GeneticAlgorithm::crossPopulation() {
 
 }
 
-
-
 void GeneticAlgorithm::genRandomPopulation() {
-    int numVehicles = eval.getNumVehicles();
-    int numClients = eval.getNumClients();
+    const int numVehicles = eval.getNumVehicles();
+    const int numClients = eval.getNumClients();
 
     for (int i = 0; i<popSize; i++) {
         std::vector<int> randGenotype;
@@ -88,6 +91,7 @@ void GeneticAlgorithm::genRandomPopulation() {
         individual.initFitness(eval);
         population.push_back(individual);
     }
+    calcFitness();
 }
 
 Individual& GeneticAlgorithm::selectParents() {
@@ -103,12 +107,43 @@ Individual& GeneticAlgorithm::selectParents() {
     for (int i = 1; i < optimalSize; i++) {
         int contenderIdx = gen.nextInt(0, popSize - 1);
 
-
         if (population[contenderIdx].getFitnes() > population[bestIdx].getFitnes()) {
             bestIdx = contenderIdx;
         }
     }
     return population[bestIdx];
+}
+
+Individual& GeneticAlgorithm::currentIterationBestSolution() {
+    double bestFitness = -1;
+    int bestIndex = 0;
+
+    for (int i = 0; i<popSize; i++) {
+
+        Individual& in = population[i];
+        double inFitness = in.getFitnes();
+
+        if (inFitness>=0 && inFitness >= bestFitness) {
+            bestFitness = inFitness;
+            bestIndex = i;
+        }
+    }
+
+    return population[bestIndex];
+}
+
+void GeneticAlgorithm::calcFitness() {
+    for (Individual &in: population) {
+        if (in.getFitnes() < 0) {
+            in.initFitness(eval);
+        }
+    }
+}
+
+void GeneticAlgorithm::printBest() {
+    if (bestSolution) {
+        std::cout << "Najlepszy znaleziony dystans: " << 1.0 / bestSolution->getFitnes() << std::endl;
+    }
 }
 
 

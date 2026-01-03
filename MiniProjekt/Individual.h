@@ -12,14 +12,14 @@
 
 class Individual {
 public:
-    Individual(const std::vector<int>& genotype);
+    explicit Individual(const std::vector<int>& genotype);
     Individual(const Individual &other);
 
     const std::vector<int>& getGenotype() const;
-    std::pair<Individual, Individual> cross(const Individual &other) const;
-    void mutate(double mutProb, RandomGenerator& generator) ;
+    std::pair<Individual, Individual> cross(const Individual &other, RandomGenerator& generator) const;
+    void mutate(double mutProb, RandomGenerator& generator, int numVehicles) ;
     double initFitness(const Evaluator& eval);
-    double getFitnes();
+    double getFitnes() const;
 private:
     std::vector<int> genotype;
     double fitness;
