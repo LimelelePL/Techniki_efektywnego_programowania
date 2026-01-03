@@ -54,7 +54,6 @@ double Evaluator::evaluate(const std::vector<int>& genotype) const {
     // obliczamy wartość naszej funkcji przystosowania
     int totalDist = 0;
     int totalPenalty = 0;
-    const int penalty = 1000;
     for (int i = 0; i<numVehicles; i++) {
         if (lastCustomerOfVehicle[i] != depot) {
             // jezeli samochód został użyty musi jeszcze wrócic do bazy
@@ -62,16 +61,21 @@ double Evaluator::evaluate(const std::vector<int>& genotype) const {
         }
 
         if (loads[i] > maxCapacity) {
+            constexpr int penalty = 1000;
             // kara penalty za każdą nadmiarową jednostkę towaru
             totalPenalty += (loads[i] - maxCapacity) * penalty;
         }
     }
 
-    return totalDist+totalPenalty;
+    return 1/(totalDist+totalPenalty);
 }
 
 int Evaluator::getNumVehicles() const {
     return numVehicles;
+}
+
+int Evaluator::getNumClients() const {
+    return data.GetNumCustomers();
 }
 
 

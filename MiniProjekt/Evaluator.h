@@ -14,6 +14,7 @@ public:
     double evaluate(const std::vector<int> &genotype) const;
     bool loadFromFile(const std::string& folder, const std::string& name);
     int getNumVehicles() const;
+    int getNumClients() const;
 
 private:
     ProblemData data;

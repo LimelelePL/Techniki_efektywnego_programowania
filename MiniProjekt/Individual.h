@@ -19,9 +19,11 @@ public:
     std::pair<Individual, Individual> cross(const Individual &other) const;
     void mutate(double mutProb, RandomGenerator& generator) ;
     double initFitness(const Evaluator& eval);
+    double getFitnes();
 private:
     std::vector<int> genotype;
     double fitness;
+
 };
 
 
