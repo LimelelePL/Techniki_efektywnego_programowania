@@ -4,8 +4,6 @@
 
 #include "Individual.h"
 
-#include <set>
-
 #include "ConstantValues.h"
 #include "RandomGenerator.h"
 

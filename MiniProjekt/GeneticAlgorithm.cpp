@@ -83,9 +83,9 @@ void GeneticAlgorithm::genRandomPopulation() {
 
     for (int i = 0; i<popSize; i++) {
         std::vector<int> randGenotype;
-        // genotyp to ilosc klientow
+        // genotyp to przypisanie klientów
         for (int j = 0; j<numClients; j++) {
-            // losujemy pojazd
+            // losujemy pojazd dla klienta
             int gene = gen.nextInt(0,numVehicles-1);
             randGenotype.push_back(gene);
         }

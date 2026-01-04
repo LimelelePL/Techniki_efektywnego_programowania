@@ -26,7 +26,7 @@ void manualTest() {
 int main() {
 
     std::string folder = "Vrp-Set-A";
-    std::string file = "A-n32-k5";
+    std::string file = "A-n31-mojTest";
 
     Evaluator evaluator;
     std::cout << "Laduje problem: " << file << "..." << std::endl;
