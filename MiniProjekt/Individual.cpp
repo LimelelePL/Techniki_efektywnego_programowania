@@ -6,12 +6,12 @@
 
 #include <set>
 
+#include "ConstantValues.h"
 #include "RandomGenerator.h"
 
 Individual::Individual(const std::vector<int>& genotype) {
     this->genotype = genotype;
-    // -1 bo po mutacji/krzyzowaniu zmieniamy fitness
-    this-> fitness = -1;
+    this-> fitness = DEFAULT_FITNESS;
 }
 
 Individual::Individual(const Individual &other) {
@@ -19,7 +19,6 @@ Individual::Individual(const Individual &other) {
     this -> fitness = other.fitness;
 }
 
-// toDO: zastanowic sie nad tym
 double Individual::initFitness(const Evaluator &eval) {
     fitness = eval.evaluate(genotype);
     return fitness;
@@ -40,8 +39,8 @@ std::pair<Individual, Individual> Individual::cross(const Individual &other, Ran
     }
 
     // po modyfikacji genotypów należy ponownie policzyc funkcje przystosowania
-    child1.fitness = -1;
-    child2.fitness = -1;
+    child1.fitness = DEFAULT_FITNESS;
+    child2.fitness = DEFAULT_FITNESS;
 
     return {child1, child2};
 }
@@ -58,7 +57,7 @@ void Individual::mutate(double mutProb, RandomGenerator& generator, int numVehic
             int newGen = generator.nextInt(0, numVehicles - 1);
             gene = newGen;
             // po zmianie choc jednego genu przystosowanie musi byc obliczone ponownie
-            this->fitness = -1;
+            this->fitness = DEFAULT_FITNESS;
         }
     }
 }

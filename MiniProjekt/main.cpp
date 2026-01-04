@@ -8,7 +8,6 @@ void manualTest() {
     std::string folder = "Vrp-Set-A";
     std::string file = "A-n31-mojTest";
 
-
     Evaluator evaluator;
     std::cout << "Laduje problem: " << file << "..." << std::endl;
 
@@ -26,30 +25,32 @@ void manualTest() {
 
 int main() {
 
-    // std::string folder = "Vrp-Set-A";
-    // std::string file = "A-n32-k5";
-    //
-    // Evaluator evaluator;
-    // std::cout << "Laduje problem: " << file << "..." << std::endl;
-    //
-    // if (!evaluator.loadFromFile(folder, file)) {
-    //     std::cerr << "nie udalo sie zaladowac pliku " << std::endl;
-    //     return 1;
-    // }
-    //
-    // int populationSize = 100;
-    // double crossoverProbability = 0.8;
-    // double mutationProbability = 0.05;
-    // int iterations = 10000;
-    //
-    // GeneticAlgorithm ga(evaluator, populationSize, crossoverProbability, mutationProbability, iterations);
-    //
-    // std::cout << "Rozpoczynam ewolucje!" << std::endl;
-    // ga.run();
-    //
-    // std::cout << "\n=== WYNIK KONCOWY ===" << std::endl;
-    // ga.printBest();
+    std::string folder = "Vrp-Set-A";
+    std::string file = "A-n32-k5";
 
-    manualTest();
+    Evaluator evaluator;
+    std::cout << "Laduje problem: " << file << "..." << std::endl;
+
+    if (!evaluator.loadFromFile(folder, file)) {
+        std::cerr << "nie udalo sie zaladowac pliku " << std::endl;
+        return 1;
+    }
+
+    int populationSize = 300;
+    double crossoverProbability = 0.8;
+    double mutationProbability = 0.03;
+    int iterations = 5000;
+    RandomGenerator generator;
+
+    GeneticAlgorithm ga(evaluator, generator, populationSize, crossoverProbability, mutationProbability, iterations);
+
+    std::cout << "Rozpoczynam ewolucje!" << std::endl;
+    ga.run();
+
+    std::cout << "\n=== WYNIK KONCOWY ===" << std::endl;
+    ga.printBest();
+    ga.printDetailedBest();
+
+    //manualTest();
     return 0;
 }

@@ -7,22 +7,22 @@
 #include <algorithm>
 #include <chrono>
 
+#include "ConstantValues.h"
+
 Evaluator::Evaluator() {
-    numVehicles = 0;
+    numVehicles = DEFAULT_NUMVEHICLES;
 }
 
 bool Evaluator::loadFromFile(const std::string &folder, const std::string &name) {
     ProblemLoader loader(folder, name);
     data = loader.LoadProblem();
 
-    //sprawdzamy czy dane zaladowane do data maja sens (stala WrongValue = -1)
     if (data.GetDimension() <= 0 || data.GetCapacity() <= 0) {
         return false;
     }
     numVehicles = data.GetDimension() - 1;
 
     return true;
-    //PAMIETAC ZEBY OBSLUZYC W INTERFEJSIE
 }
 
 double Evaluator::evaluate(const std::vector<int>& genotype) const {
@@ -35,7 +35,7 @@ double Evaluator::evaluate(const std::vector<int>& genotype) const {
     vector<int> demands = data.GetDemands();
     vector<int> permutation = data.GetPermutation();
     vector<int> loads(numVehicles,0);
-    vector<int> distances(numVehicles,0);
+    vector<double> distances(numVehicles,0);
     vector<int> lastCustomerOfVehicle(numVehicles, depot);
 
     //toDo: do obsluzenia

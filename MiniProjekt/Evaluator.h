@@ -15,6 +15,13 @@ public:
     int getNumVehicles() const;
     int getNumClients() const;
 
+    std::vector<int> getDemands() const { return data.GetDemands(); }
+
+    std::vector<int> getPermutation() const { return data.GetPermutation(); }
+
+    int getCapacity() const { return data.GetCapacity(); }
+
+
 private:
     ProblemData data;
     int numVehicles;

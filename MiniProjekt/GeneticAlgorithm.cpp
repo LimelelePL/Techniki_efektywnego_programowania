@@ -6,11 +6,13 @@
 
 #include <iostream>
 
-GeneticAlgorithm::GeneticAlgorithm(Evaluator &eval,int popSize, double crossProb, double mutProb, int maxIterations) : crossProb(
-    crossProb), mutProb(mutProb), maxIterations(maxIterations), bestSolution(nullptr), eval(eval) {
+#include "ConstantValues.h"
 
-    if (popSize < 2) {
-        this->popSize = 10;
+GeneticAlgorithm::GeneticAlgorithm(Evaluator &eval, RandomGenerator& generator, int popSize, double crossProb, double mutProb, int maxIterations) : crossProb(
+                                                                                                                                                       crossProb), mutProb(mutProb), maxIterations(maxIterations), bestSolution(nullptr), eval(eval), gen(generator) {
+
+    if (popSize < MIN_POPSIZE) {
+        this->popSize = DEFAULT_POPSIZE;
     } else {
         this->popSize = popSize;
     }
@@ -146,4 +148,40 @@ void GeneticAlgorithm::printBest() {
     }
 }
 
+
+void GeneticAlgorithm::printDetailedBest() {
+        if (!bestSolution) return;
+
+        // Pobieramy dane potrzebne do wyliczeń z Evaluatora
+        int maxCap = eval.getCapacity();
+        const std::vector<int>& genotype = bestSolution->getGenotype();
+        const std::vector<int>& demands = eval.getDemands();
+        const std::vector<int>& permutation = eval.getPermutation();
+
+        std::vector<int> loads(eval.getNumVehicles(), 0);
+        bool overallFeasible = true;
+
+        // Wyliczamy ladunek dla kazdego auta
+        for (size_t i = 0; i < permutation.size(); ++i) {
+            int clientIdx = permutation[i] - 1;
+            int vehicleIdx = genotype[i];
+            loads[vehicleIdx] += demands[clientIdx];
+        }
+
+        std::cout << "\n=== SZCZEGOLOWY RAPORT DOPUSZCZALNOSCI ===" << std::endl;
+        for (int i = 0; i < loads.size(); i++) {
+            bool feasible = (loads[i] <= maxCap);
+            if (!feasible) overallFeasible = false;
+
+            if (loads[i] > 0 ) {
+                std::cout << "Pojazd #" << i << ": Ladunek = " << loads[i]
+                          << " / " << maxCap
+                          << (feasible ? " [OK]" : " [PRZEKROCZONE!]") << std::endl;
+            }
+        }
+
+        std::cout << "------------------------------------------" << std::endl;
+        std::cout << "STATUS ROZWIAZANIA: " << (overallFeasible ? "DOPUSZCZALNE" : "NIEDOPUSZCZALNE") << std::endl;
+        std::cout << "KONCOWY DYSTANS: " << 1.0 / bestSolution->getFitnes() << std::endl;
+    }
 
