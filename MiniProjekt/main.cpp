@@ -29,12 +29,12 @@ int main() {
     std::string file = "A-n31-mojTest";
 
     Evaluator evaluator;
-    std::cout << "Laduje problem: " << file << "..." << std::endl;
 
     if (!evaluator.loadFromFile(folder, file)) {
-        std::cerr << "nie udalo sie zaladowac pliku " << std::endl;
+        std::cerr << "nie udalo sie zaladowac pliku lub zawiera błąd w dancyh " << std::endl;
         return 1;
     }
+    std::cout << "Laduje problem: " << file << "..." << std::endl;
 
     int populationSize = 300;
     double crossoverProbability = 0.8;

@@ -24,8 +24,8 @@ double Individual::initFitness(const Evaluator &eval) {
 
 // decyzja o tym czy krzyzowac czy nie bedzie w geneticAlgotirthm
 std::pair<Individual, Individual> Individual::cross(const Individual &other, RandomGenerator& generator) const {
-    int size = static_cast<int>(genotype.size());
-    int cutPoint =generator.nextInt(1,size-1);
+    const int size = static_cast<int>(genotype.size());
+    const int cutPoint =generator.nextInt(1,size-1);
 
     Individual child1(*this);
     Individual child2(other);

@@ -9,15 +9,12 @@
 
 #include "ConstantValues.h"
 
-Evaluator::Evaluator() {
-    numVehicles = DEFAULT_NUMVEHICLES;
-}
 
 bool Evaluator::loadFromFile(const std::string &folder, const std::string &name) {
     ProblemLoader loader(folder, name);
     data = loader.LoadProblem();
 
-    if (data.GetDimension() <= 0 || data.GetCapacity() <= 0) {
+    if (data.GetDimension() <= 0 || data.GetCapacity() <= 0 || !checkIfProblemIsSolvable()) {
         return false;
     }
     numVehicles = data.GetDimension() - 1;
@@ -66,8 +63,20 @@ double Evaluator::evaluate(const std::vector<int>& genotype) const {
             totalPenalty += (loads[i] - maxCapacity) * penalty;
         }
     }
-
     return 1.0/(totalDist+totalPenalty);
+}
+
+// zwraca false gdy dany demand z pliku bedzie wiekszy od capacity
+bool Evaluator::checkIfProblemIsSolvable() {
+    int cap = data.GetCapacity();
+    const std::vector<int>& demands = data.GetDemands();
+
+    for (int d : demands) {
+        if (d > cap) {
+            return false;
+        }
+    }
+    return true;
 }
 
 int Evaluator::getNumVehicles() const {

@@ -9,7 +9,6 @@ using namespace LcVRPContest;
 
 class Evaluator {
 public:
-    Evaluator();
     double evaluate(const std::vector<int> &genotype) const;
     bool loadFromFile(const std::string& folder, const std::string& name);
     int getNumVehicles() const;
@@ -25,6 +24,9 @@ public:
 private:
     ProblemData data;
     int numVehicles;
+
+    bool checkIfProblemIsSolvable();
+
 };
 
 
