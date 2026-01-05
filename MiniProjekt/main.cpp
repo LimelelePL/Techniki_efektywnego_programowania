@@ -25,8 +25,8 @@ void manualTest() {
 
 int main() {
 
-    std::string folder = "Vrp-Set-A";
-    std::string file = "A-n31-mojTest";
+    std::string folder = "Vrp-Set-X";
+    std::string file = "X-n209-k16";
 
     Evaluator evaluator;
 
@@ -36,7 +36,7 @@ int main() {
     }
     std::cout << "Laduje problem: " << file << "..." << std::endl;
 
-    int populationSize = 300;
+    int populationSize = 1000;
     double crossoverProbability = 0.8;
     double mutationProbability = 0.03;
     int iterations = 5000;

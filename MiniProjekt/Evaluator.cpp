@@ -9,6 +9,9 @@
 
 #include "ConstantValues.h"
 
+Evaluator::Evaluator() {
+    this->numVehicles = DEFAULT_NUMVEHICLES;
+}
 
 bool Evaluator::loadFromFile(const std::string &folder, const std::string &name) {
     ProblemLoader loader(folder, name);
