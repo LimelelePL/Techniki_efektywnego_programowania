@@ -13,19 +13,27 @@ Evaluator::Evaluator() {
     this->numVehicles = DEFAULT_NUMVEHICLES;
 }
 
-bool Evaluator::loadFromFile(const std::string &folder, const std::string &name) {
+Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std::string &name) {
     ProblemLoader loader(folder, name);
-    data = loader.LoadProblem();
 
-    if (data.GetDimension() <= 0 || data.GetCapacity() <= 0 || !checkIfProblemIsSolvable()) {
-        return false;
-    }
+    auto loadResult = loader.LoadProblem();
+
+    if (!loadResult.isSuccess()) return Result<void, Error>::fail(loadResult.getErrors());
+
+    this->data = loadResult.getValue();
+    
+    if (data.GetDimension() <= 0)
+        return Result<void, Error>::fail(new Error("INVALID_DIMENSION"));
+    if (data.GetCapacity() <= 0)
+        return Result<void, Error>::fail(new Error("INVALID_CAPACITY"));
+    if (!checkIfProblemIsSolvable())
+        return Result<void, Error>::fail(new Error("PROBLEM_UNSOLVABLE"));
+
     numVehicles = data.GetDimension() - 1;
-
-    return true;
+    return Result<void, Error>::ok();
 }
 
-double Evaluator::evaluate(const std::vector<int>& genotype) const {
+Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) const {
     //numVehicles = *ranges::max_element(genotype)+1;
 
     int maxCapacity = data.GetCapacity();
@@ -39,7 +47,8 @@ double Evaluator::evaluate(const std::vector<int>& genotype) const {
     vector<int> lastCustomerOfVehicle(numVehicles, depot);
 
     //toDo: do obsluzenia
-    if (genotype.size()!=permutation.size()) return -1;
+    if (genotype.size()!=permutation.size()) return Result<double, Error>(new Error("GENOTYPE_MISMATCH"));
+
 
     for (int i = 0; i<permutation.size(); i++) {
         // przyporządkowujemy klientowi pojazd ktory odpowiada mu w genotypie
@@ -66,7 +75,8 @@ double Evaluator::evaluate(const std::vector<int>& genotype) const {
             totalPenalty += (loads[i] - maxCapacity) * penalty;
         }
     }
-    return 1.0/(totalDist+totalPenalty);
+    double fitness = 1.0 / (totalDist + totalPenalty);
+    return Result<double, Error>::ok(fitness);
 }
 
 // zwraca false gdy dany demand z pliku bedzie wiekszy od capacity

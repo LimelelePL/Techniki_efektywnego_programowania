@@ -12,25 +12,30 @@ ProblemLoader::ProblemLoader(const string& folder_name, const string& instance_n
 	base_path_ = "data/lcvrp/" + folder_name_ + "/";
 }
 
-ProblemData ProblemLoader::LoadProblem() {
+Result<ProblemData, Error> ProblemLoader::LoadProblem() {
     ProblemData problem_data;
     string file_path = base_path_ + instance_name_ + ".lcvrp";
-    
-    ParseLcVrpFile(file_path, problem_data);
-    
-    // we need to build the edge weight matrix if EUC_2D
+
+    // Wywołujemy parser i sprawdzamy wynik
+    Result<void, Error> parseResult = ParseLcVrpFile(file_path, problem_data);
+
+    if (!parseResult.isSuccess()) {
+        // Jeśli parsowanie się nie udało, zwracamy błąd
+        return Result<ProblemData, Error>::fail(parseResult.getErrors());
+    }
+
     if (problem_data.GetEdgeWeightType() == "EUC_2D") {
         problem_data.BuildEdgeWeightMatrix();
     }
-    
-    return problem_data;
+
+    return Result<ProblemData, Error>::ok(problem_data);
 }
 
-void ProblemLoader::ParseLcVrpFile(const string& file_path, ProblemData& problem_data) {
+Result<void, Error> ProblemLoader::ParseLcVrpFile(const string& file_path, ProblemData& problem_data) {
+
     ifstream file(file_path);
     if (!file.is_open()) {
-        cout << "Error: Cannot open file: " << file_path << endl;
-        exit(1);
+        return Result<void, Error>::fail(new Error("FILE_OPEN_ERROR: " + file_path));
     }
 
     string line;
@@ -118,6 +123,7 @@ void ProblemLoader::ParseLcVrpFile(const string& file_path, ProblemData& problem
     }
 
     file.close();
+    return Result<void, Error>::ok();
 }
 
 void ProblemLoader::ParseEdgeWeightSection(ifstream& file, ProblemData& problem_data) {

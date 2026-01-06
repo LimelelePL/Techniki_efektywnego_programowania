@@ -18,7 +18,7 @@ Individual::Individual(const Individual &other) {
 }
 
 double Individual::initFitness(const Evaluator &eval) {
-    fitness = eval.evaluate(genotype);
+    fitness = eval.evaluate(genotype).getValue();
     return fitness;
 }
 

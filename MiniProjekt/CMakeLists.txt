@@ -15,4 +15,8 @@ add_executable(MiniProjekt main.cpp
         Evaluator.h
         RandomGenerator.cpp
         RandomGenerator.h
-        ConstantValues.h)
+        ConstantValues.h
+        Errors/Error.cpp
+        Errors/Error.h
+        Errors/Result.cpp
+        Errors/Result.h)
