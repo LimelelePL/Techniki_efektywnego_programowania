@@ -18,5 +18,4 @@ add_executable(MiniProjekt main.cpp
         ConstantValues.h
         Errors/Error.cpp
         Errors/Error.h
-        Errors/Result.cpp
         Errors/Result.h)
