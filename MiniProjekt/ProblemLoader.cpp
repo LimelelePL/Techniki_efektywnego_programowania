@@ -39,87 +39,99 @@ Result<void, Error> ProblemLoader::ParseLcVrpFile(const string& file_path, Probl
     }
 
     string line;
-    while (getline(file, line)) {
-        // skip empty lines
-        if (line.empty()) continue;
+    try {
+        while (getline(file, line)) {
+            // skip empty lines
+            if (line.empty()) continue;
 
-        // parse header fields
-        if (line.find("NAME") != string::npos) {
-            size_t colon_pos = line.find(':');
-            if (colon_pos != string::npos) {
-                string name = line.substr(colon_pos + 1);
-                // remove all kind of whitespaces
-                size_t start = name.find_first_not_of(" \t\r\n");
-                if (start != string::npos) {
-                    name = name.substr(start);
-                    size_t end = name.find_last_not_of(" \t\r\n");
-                    name = name.substr(0, end + 1);
+            // parse header fields
+            if (line.find("NAME") != string::npos) {
+                size_t colon_pos = line.find(':');
+                if (colon_pos != string::npos) {
+                    string name = line.substr(colon_pos + 1);
+                    // remove all kind of whitespaces
+                    size_t start = name.find_first_not_of(" \t\r\n");
+                    if (start != string::npos) {
+                        name = name.substr(start);
+                        size_t end = name.find_last_not_of(" \t\r\n");
+                        name = name.substr(0, end + 1);
+                    }
+                    problem_data.SetName(name);
                 }
-                problem_data.SetName(name);
             }
-        }
-        else if (line.find("DIMENSION") != string::npos) {
-            size_t colon_pos = line.find(':');
-            if (colon_pos != string::npos) {
-                int dimension = stoi(line.substr(colon_pos + 1));
-                problem_data.SetDimension(dimension);
-            }
-        }
-        else if (line.find("CAPACITY") != string::npos) {
-            size_t colon_pos = line.find(':');
-            if (colon_pos != string::npos) {
-                int capacity = stoi(line.substr(colon_pos + 1));
-                problem_data.SetCapacity(capacity);
-            }
-        }
-        else if (line.find("DISTANCE") != string::npos) {
-            size_t colon_pos = line.find(':');
-            if (colon_pos != string::npos) {
-                double distance = stod(line.substr(colon_pos + 1));
-                problem_data.SetDistance(distance);
-            }
-        }
-        else if (line.find("EDGE_WEIGHT_TYPE") != string::npos) {
-            size_t colon_pos = line.find(':');
-            if (colon_pos != string::npos) {
-                string type = line.substr(colon_pos + 1);
-                size_t start = type.find_first_not_of(" \t\r\n");
-                if (start != string::npos) {
-                    type = type.substr(start);
-                    size_t end = type.find_last_not_of(" \t\r\n");
-                    type = type.substr(0, end + 1);
+            else if (line.find("DIMENSION") != string::npos) {
+                size_t colon_pos = line.find(':');
+                if (colon_pos != string::npos) {
+                    int dimension = stoi(line.substr(colon_pos + 1));
+                    problem_data.SetDimension(dimension);
                 }
-                problem_data.SetEdgeWeightType(type);
             }
-        }
-        else if (line.find("EDGE_WEIGHT_SECTION") != string::npos) {
-            ParseEdgeWeightSection(file, problem_data);
-        }
-        else if (line.find("NODE_COORD_SECTION") != string::npos) {
-            ParseNodeCoordSection(file, problem_data);
-        }
-        else if (line.find("DEMAND_SECTION") != string::npos) {
-            ParseDemandSection(file, problem_data);
-        }
-        else if (line.find("DEPOT_SECTION") != string::npos) {
-            ParseDepotSection(file, problem_data);
-        }
-        else if (line.find("PERMUTATION") != string::npos) {
-            size_t colon_pos = line.find(':');
-            if (colon_pos != string::npos) {
-                vector<int> permutation;
-                string perm_data = line.substr(colon_pos + 1);
-                istringstream iss(perm_data);
-                int customer_id;
-                while (iss >> customer_id) {
-                    permutation.push_back(customer_id);
+            else if (line.find("CAPACITY") != string::npos) {
+                size_t colon_pos = line.find(':');
+                if (colon_pos != string::npos) {
+                    int capacity = stoi(line.substr(colon_pos + 1));
+                    problem_data.SetCapacity(capacity);
                 }
-                problem_data.SetPermutation(permutation);
+            }
+            else if (line.find("DISTANCE") != string::npos) {
+                size_t colon_pos = line.find(':');
+                if (colon_pos != string::npos) {
+                    double distance = stod(line.substr(colon_pos + 1));
+                    problem_data.SetDistance(distance);
+                }
+            }
+            else if (line.find("EDGE_WEIGHT_TYPE") != string::npos) {
+                size_t colon_pos = line.find(':');
+                if (colon_pos != string::npos) {
+                    string type = line.substr(colon_pos + 1);
+                    size_t start = type.find_first_not_of(" \t\r\n");
+                    if (start != string::npos) {
+                        type = type.substr(start);
+                        size_t end = type.find_last_not_of(" \t\r\n");
+                        type = type.substr(0, end + 1);
+                    }
+                    problem_data.SetEdgeWeightType(type);
+                }
+            }
+            else if (line.find("EDGE_WEIGHT_SECTION") != string::npos) {
+                ParseEdgeWeightSection(file, problem_data);
+            }
+            else if (line.find("NODE_COORD_SECTION") != string::npos) {
+                ParseNodeCoordSection(file, problem_data);
+            }
+            else if (line.find("DEMAND_SECTION") != string::npos) {
+                ParseDemandSection(file, problem_data);
+            }
+            else if (line.find("DEPOT_SECTION") != string::npos) {
+                ParseDepotSection(file, problem_data);
+            }
+            else if (line.find("NUM_GROUPS")!= string::npos) {
+                size_t colon_pos = line.find(':');
+                if (colon_pos != string::npos) {
+                    int num_groups = stoi(line.substr(colon_pos + 1));
+                    problem_data.SetNumGroups(num_groups);
+                }
+            }
+            else if (line.find("PERMUTATION") != string::npos) {
+                size_t colon_pos = line.find(':');
+                if (colon_pos != string::npos) {
+                    vector<int> permutation;
+                    string perm_data = line.substr(colon_pos + 1);
+                    istringstream iss(perm_data);
+                    int customer_id;
+                    while (iss >> customer_id) {
+                        permutation.push_back(customer_id);
+                    }
+                    problem_data.SetPermutation(permutation);
+                }
+            }
+            else if (line.find("EOF") != string::npos) {
+                break;
             }
         }
-        else if (line.find("EOF") != string::npos) {
-            break;
-        }
+    } catch (const std::exception& e) {
+        file.close();
+        return Result<void, Error>::fail(new Error("PARSING_EXCEPTION: " + string(e.what())));
     }
 
     file.close();

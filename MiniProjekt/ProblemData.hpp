@@ -27,6 +27,7 @@ namespace LcVRPContest {
 		string GetEdgeWeightType() const { return edge_weight_type_; }
 		int GetDepot() const { return depot_; }
 		int GetNumCustomers() const { return dimension_ - 1; } // dimension includes depot
+
 		
 		const vector<Coordinate>& GetCoordinates() const { return coordinates_; }
 		const vector<int>& GetDemands() const { return demands_; }
@@ -34,6 +35,8 @@ namespace LcVRPContest {
 		const vector<vector<double>>& GetEdgeWeights() const { return edge_weights_; }
 
 		// setters
+		int GetNumGroups() const { return num_groups_; }
+		void SetNumGroups(int num_groups) { num_groups_ = num_groups; }
 		void SetName(const string& name) { name_ = name; }
 		void SetDimension(int dimension) { 
 			dimension_ = dimension;
@@ -67,6 +70,7 @@ private:
 		bool has_distance_constraint_;
 		string edge_weight_type_; // EUC_2D, EXPLICIT, maybe more?
 		int depot_; // depot node id (usually 1)
+		int num_groups_;
 
 		vector<Coordinate> coordinates_; // node coordinates (indexed from 0, but node 1 is at index 0)
 		vector<int> demands_; // customer demands (indexed from 0, but node 1 is at index 0)

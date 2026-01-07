@@ -9,7 +9,9 @@ ProblemData::ProblemData()
       capacity_(0),
       distance_(0.0),
       has_distance_constraint_(false),
-      depot_(1) {}
+      depot_(1),
+    num_groups_(0)
+{}
 
 double ProblemData::CalculateDistance(int i, int j) const {
     if (i < 0 || i >= dimension_ || j < 0 || j >= dimension_) {

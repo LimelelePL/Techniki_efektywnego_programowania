@@ -24,17 +24,19 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
     
     if (data.GetDimension() <= 0)
         return Result<void, Error>::fail(new Error("INVALID_DIMENSION"));
+    if (data.GetNumGroups() <= 0)
+        return Result<void, Error>::fail(new Error("INVALID_NUM_GROUPS"));
     if (data.GetCapacity() <= 0)
         return Result<void, Error>::fail(new Error("INVALID_CAPACITY"));
     if (!checkIfProblemIsSolvable())
         return Result<void, Error>::fail(new Error("PROBLEM_UNSOLVABLE"));
 
-    numVehicles = data.GetDimension() - 1;
+
+    numVehicles = data.GetNumGroups();
     return Result<void, Error>::ok();
 }
 
 Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) const {
-    //numVehicles = *ranges::max_element(genotype)+1;
 
     int maxCapacity = data.GetCapacity();
     // w pliku indeksowanie jest od 1
