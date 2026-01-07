@@ -184,4 +184,3 @@ void GeneticAlgorithm::printDetailedBest() {
         std::cout << "STATUS ROZWIAZANIA: " << (overallFeasible ? "DOPUSZCZALNE" : "NIEDOPUSZCZALNE") << std::endl;
         std::cout << "KONCOWY DYSTANS: " << 1.0 / bestSolution->getFitnes() << std::endl;
     }
-

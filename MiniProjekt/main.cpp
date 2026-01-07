@@ -40,7 +40,7 @@ int main() {
 
     if (!loadResult.isSuccess()) {
         std::cout << "BŁĄD KRYTYCZNY PODCZAS ŁADOWANIA:" << std::endl;
-        for (Error* err : loadResult.getErrors()) {
+        for (const Error* err : loadResult.getErrors()) {
             std::cout << " -> " << err->getCode() << std::endl;
         }
         return 1;

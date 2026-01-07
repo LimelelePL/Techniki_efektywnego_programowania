@@ -21,7 +21,7 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
     if (!loadResult.isSuccess()) return Result<void, Error>::fail(loadResult.getErrors());
 
     this->data = loadResult.getValue();
-    
+
     if (data.GetDimension() <= 0)
         return Result<void, Error>::fail(new Error("INVALID_DIMENSION"));
     if (data.GetNumGroups() <= 0)
@@ -101,7 +101,6 @@ int Evaluator::getNumVehicles() const {
 int Evaluator::getNumClients() const {
     return data.GetNumCustomers();
 }
-
 
 
 

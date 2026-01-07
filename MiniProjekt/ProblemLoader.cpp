@@ -6,8 +6,8 @@
 using namespace LcVRPContest;
 
 ProblemLoader::ProblemLoader(const string& folder_name, const string& instance_name)
-	: folder_name_(folder_name), 
-    instance_name_(instance_name) 
+	: folder_name_(folder_name),
+    instance_name_(instance_name)
 {
 	base_path_ = "data/lcvrp/" + folder_name_ + "/";
 }
@@ -188,7 +188,7 @@ void ProblemLoader::ParseDepotSection(ifstream& file, ProblemData& problem_data)
     int depot;
     file >> depot;
     problem_data.SetDepot(depot);
-    
+
     // read -1 terminator
     int terminator;
     file >> terminator;

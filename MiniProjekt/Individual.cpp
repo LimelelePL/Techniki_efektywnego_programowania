@@ -68,4 +68,3 @@ double Individual::getFitnes() const {
     return fitness;
 }
 
-

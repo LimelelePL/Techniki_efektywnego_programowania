@@ -28,7 +28,7 @@ namespace LcVRPContest {
 		int GetDepot() const { return depot_; }
 		int GetNumCustomers() const { return dimension_ - 1; } // dimension includes depot
 
-		
+
 		const vector<Coordinate>& GetCoordinates() const { return coordinates_; }
 		const vector<int>& GetDemands() const { return demands_; }
 		const vector<int>& GetPermutation() const { return permutation_; }
@@ -38,19 +38,19 @@ namespace LcVRPContest {
 		int GetNumGroups() const { return num_groups_; }
 		void SetNumGroups(int num_groups) { num_groups_ = num_groups; }
 		void SetName(const string& name) { name_ = name; }
-		void SetDimension(int dimension) { 
+		void SetDimension(int dimension) {
 			dimension_ = dimension;
 			coordinates_.resize(dimension);
 			demands_.resize(dimension);
 		}
 		void SetCapacity(int capacity) { capacity_ = capacity; }
-		void SetDistance(double distance) { 
-			distance_ = distance; 
+		void SetDistance(double distance) {
+			distance_ = distance;
 			has_distance_constraint_ = true;
 		}
 		void SetEdgeWeightType(const string& type) { edge_weight_type_ = type; }
 		void SetDepot(int depot) { depot_ = depot; }
-		
+
 		void SetCoordinates(const vector<Coordinate>& coordinates) { coordinates_ = coordinates; }
 		void SetDemands(const vector<int>& demands) { demands_ = demands; }
 		void SetPermutation(const vector<int>& permutation) { permutation_ = permutation; }
