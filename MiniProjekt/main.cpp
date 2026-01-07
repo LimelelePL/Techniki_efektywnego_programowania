@@ -31,7 +31,7 @@ int main() {
     // Leuven2 4 811 620
 
     std::string folder = "Vrp-Set-A";
-    std::string file = "A-n31-mojTest";
+    std::string file = "A-n32-k5";
 
 
     Evaluator evaluator;

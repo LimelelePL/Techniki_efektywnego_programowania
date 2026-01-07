@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 4.0)
 project(MiniProjekt)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 add_executable(MiniProjekt main.cpp
-        ProblemData.cpp
-        ProblemLoader.hpp
-        ProblemLoader.cpp
+        VrpInstance.cpp
+        InstanceReader.hpp
+        InstanceReader.cpp
         GeneticAlgorithm.cpp
         GeneticAlgorithm.h
         Individual.cpp

@@ -4,29 +4,29 @@
 
 #ifndef MINIPROJEKT_EVALUATOR_H
 #define MINIPROJEKT_EVALUATOR_H
-#include "ProblemLoader.hpp"
+#include "InstanceReader.hpp"
 #include "Errors/Error.h"
 #include "Errors/Result.h"
-using namespace LcVRPContest;
+using namespace std;
 
 class Evaluator {
 public:
     Evaluator();
 
-    Result<double, Error> evaluate(const std::vector<int> &genotype) const;
+    [[nodiscard]] Result<double, Error> evaluate(const std::vector<int> &genotype) const;
     Result<void, Error> loadFromFile(const std::string& folder, const std::string& name);
-    int getNumVehicles() const;
-    int getNumClients() const;
+    [[nodiscard]] int getNumVehicles() const;
+    [[nodiscard]] int getNumClients() const;
 
-    std::vector<int> getDemands() const { return data.GetDemands(); }
+    [[nodiscard]] std::vector<int> getDemands() const { return data.getDemands(); }
 
-    std::vector<int> getPermutation() const { return data.GetPermutation(); }
+    [[nodiscard]] std::vector<int> getPermutation() const { return data.getVisitOrder();}
 
-    int getCapacity() const { return data.GetCapacity(); }
+    [[nodiscard]] int getCapacity() const { return data.getCapacityLimit(); }
 
 
 private:
-    ProblemData data;
+    VrpInstance data;
     int numVehicles;
 
     bool checkIfProblemIsSolvable();
