@@ -30,8 +30,8 @@ int main() {
     // X-n209-k16 wynik 119957
     // Leuven2 4 811 620
 
-    std::string folder = "Vrp-Set-P";
-    std::string file = "P-n19-k2";
+    std::string folder = "Vrp-Set-XML100";
+    std::string file = "XML100_2174_01";
 
 
     Evaluator evaluator;
@@ -46,10 +46,10 @@ int main() {
         return 1;
     }
 
-    int populationSize = 500;
-    double crossoverProbability = 0.7;
-    double mutationProbability = 0.03;
-    int iterations = 1000;
+    int populationSize = 5000;
+    double crossoverProbability = 0.8;
+    double mutationProbability = 0.05;
+    int iterations = 10000;
     RandomGenerator generator;
 
     GeneticAlgorithm ga(evaluator, generator, populationSize, crossoverProbability, mutationProbability, iterations);

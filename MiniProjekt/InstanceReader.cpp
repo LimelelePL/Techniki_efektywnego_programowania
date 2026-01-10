@@ -32,9 +32,7 @@ Result<VrpInstance, Error> InstanceReader::readInstance() const {
     return Result<VrpInstance, Error>::ok(instance);
 }
 
-Result<void, Error> InstanceReader::processFile(
-    std::ifstream& file,
-    VrpInstance& instance
+Result<void, Error> InstanceReader::processFile(std::ifstream& file,VrpInstance& instance
 ) {
     std::string line;
 
@@ -43,7 +41,7 @@ Result<void, Error> InstanceReader::processFile(
             line = trim(line);
             if (line.empty()) continue;
 
-            // ---------- HEADERS ----------
+            // Nagłówki
             if (line.starts_with("NAME")) {
                 instance.setInstanceName(trim(line.substr(line.find(':') + 1)));
             }

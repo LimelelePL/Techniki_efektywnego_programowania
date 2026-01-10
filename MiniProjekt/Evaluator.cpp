@@ -2,9 +2,16 @@
 // Created by Dominik on 02.01.2026.
 //
 
-#include "Evaluator.h"
 
-#include <algorithm>
+// Z PLIKOW
+// ID 1 to DEPOT
+// ID 2... to KLIENCi
+// GENOTYP MA MIEC ROZMIAR ROWNY LICZBIE KLIENTÓW
+// DLA KAZDEGO GENU STOSUJEMY PRZESUNIECIE -2: TZN klient 2 = genotype [0]
+// MACIERZ DEMANDS[0] to magazyn
+// PRERMUTACJA[0] = k oznacza ze pierwszym klientem jest klient k
+
+#include "Evaluator.h"
 #include <chrono>
 #include <iostream>
 using namespace std;
@@ -40,8 +47,8 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
 }
 
 Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) const {
-    int maxCapacity = data.getCapacityLimit();
-    int depot = data.getDepotNode() - 1; // Indeks bazy 0
+    const int maxCapacity = data.getCapacityLimit();
+    const int depot = data.getDepotNode() - 1;
     const vector<int>& demands = data.getDemands();
     const vector<int>& permutation = data.getVisitOrder();
 
@@ -53,9 +60,9 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
     for (int p : permutation) {
         if (p == data.getDepotNode()) continue;
 
-        int clientDistIdx = p - 1; // Indeks do tablicy dystansów 0-based
-        int genotypeIdx = p - 2; // po id: Klient nr 2 to gen[0]
-        int v = genotype[genotypeIdx]; // Pobieramy przypisany pojazd
+        int clientDistIdx = p - 1;
+        int genotypeIdx = p - 2; // Klient nr 2 (pierwszy) to gen[0]
+        int v = genotype[genotypeIdx];
 
         if (v >= 0 && v < numVehicles) {
             distances[v] += data.calculateDistance(lastPos[v], clientDistIdx);
@@ -69,14 +76,14 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
     long totalPenalty = 0;
     for (int v = 0; v < numVehicles; v++) {
         if (used[v]) totalDist += distances[v] + data.calculateDistance(lastPos[v], depot);
-        if (loads[v] > maxCapacity) totalPenalty += (loads[v] - maxCapacity) * 100;
+        if (loads[v] > maxCapacity) totalPenalty += (loads[v] - maxCapacity) * DEFAULT_PENALTY;
     }
 
     return Result<double, Error>::ok(1.0 / (totalDist + (double)totalPenalty));
 }
 // zwraca false gdy dany demand z pliku bedzie wiekszy od capacity
 bool Evaluator::checkIfProblemIsSolvable() {
-    int cap = data.getCapacityLimit();
+    const int cap = data.getCapacityLimit();
     const std::vector<int>& demands = data.getDemands();
 
     for (int d : demands) {

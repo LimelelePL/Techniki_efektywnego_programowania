@@ -20,9 +20,10 @@ GeneticAlgorithm::GeneticAlgorithm(Evaluator &eval, RandomGenerator& generator, 
 crossProb(crossProb), mutProb(mutProb), maxIterations(maxIterations), bestSolution(nullptr), eval(eval), gen(generator) {
 
     if (mutProb > 1 || mutProb < 0) {
+        mutProb = DEFAULT_PROB;
     }
     if (crossProb > 1 || crossProb < 0) {
-
+        crossProb = DEFAULT_PROB;
     }
     if (popSize < MIN_POPSIZE) {
         this->popSize = DEFAULT_POPSIZE;
@@ -124,7 +125,7 @@ Individual& GeneticAlgorithm::selectParents() {
     int bestIdx = gen.nextInt(0, popSize - 1);
 
     int minSize = 2;
-    int optimalSize = 3;
+    int optimalSize = 5;
 
     if (optimalSize > popSize) optimalSize = minSize;
 
@@ -185,7 +186,7 @@ void GeneticAlgorithm::printDetailedBest() {
 
     for (int p : permutation) {
         if (p == eval.getDepotNode()) continue;
-        int genotypeIdx = p - 2; // MAPOWANIE PO ID
+        int genotypeIdx = p - 2;
         int clientDistIdx = p - 1;
 
         if (genotypeIdx >= 0 && genotypeIdx < (int)genotype.size()) {

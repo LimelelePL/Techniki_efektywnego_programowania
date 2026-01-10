@@ -49,9 +49,6 @@ std::pair<Individual, Individual> Individual::cross(const Individual &other, Ran
 }
 
 void Individual::mutate(double mutProb, RandomGenerator& generator, int numVehicles) {
-    // wybieramy unikalne geny
-    // std::set<int> uniqueGenes(genotype.begin(), genotype.end());
-    // std::vector<int> availableGenes(uniqueGenes.begin(), uniqueGenes.end());
 
     for (int & gene : genotype) {
         // mutuje tylko ten gen który spełnia warunek p<=mutProb
