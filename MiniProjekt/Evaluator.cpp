@@ -17,7 +17,6 @@ Evaluator::Evaluator() {
 Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std::string &name) {
     InstanceReader loader(folder, name);
 
-
     auto loadResult = loader.readInstance();
 
     if (!loadResult.isSuccess()) return Result<void, Error>::fail(loadResult.getErrors());
@@ -34,13 +33,14 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
         return Result<void, Error>::fail(new Error("PROBLEM_UNSOLVABLE"));
 
 
-    numVehicles = data.getFleetSize();
+    numVehicles = getNumClients();
     return Result<void, Error>::ok();
 }
 
 Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) const {
     int maxCapacity = data.getCapacityLimit();  // ← POPRAWKA!
     int depot = data.getDepotNode() - 1;
+    int numClients = data.getCustomerCount();
 
     vector<int> demands = data.getDemands();
     vector<int> permutation = data.getVisitOrder();
@@ -51,27 +51,45 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
     if (genotype.size() != permutation.size())
         return Result<double, Error>::fail(new Error("GENOTYPE_MISMATCH"));
 
-    for (size_t i = 0; i < permutation.size(); i++) {
-        int clientID = permutation[i] - 1;
-        int vehicleID = genotype[i];
-
-        distances[vehicleID] += data.calculateDistance(lastCustomerOfVehicle[vehicleID], clientID);
-        loads[vehicleID] += demands[clientID];
-        lastCustomerOfVehicle[vehicleID] = clientID;
+    // Grupowanie: klient -> pojazd
+    vector<vector<int>> groups(numVehicles);
+    for (int client = 0; client < numClients; client++) {
+        int vehicle = genotype[client];
+        groups[vehicle].push_back(client);
     }
 
     double totalDist = 0;
     int totalPenalty = 0;
 
-    for (int i = 0; i < numVehicles; i++) {
-        if (lastCustomerOfVehicle[i] != depot) {
-            totalDist += distances[i] + data.calculateDistance(lastCustomerOfVehicle[i], depot);
+    for (int v = 0; v < numVehicles; v++) {
+
+        int load = 0;
+        int last = depot;
+        bool used = false;
+
+        for (int p : permutation) {
+            // pomijamy magazyn
+            if (p == data.getDepotNode()) {
+                continue;
+            }
+            // czy klient z permutacji nalezy do grupy ktora oblsuguje samochod v
+            int client = p-1;
+            if (genotype[client] == v) {
+                totalDist += data.calculateDistance(last, client);
+                load += demands[client];
+                last = client;
+                used = true;
+            }
         }
 
-        if (loads[i] > maxCapacity) {
-            constexpr int penalty = 1000;
-            totalPenalty += (loads[i] - maxCapacity) * penalty;
+        if (used) {
+            totalDist += data.calculateDistance(last, depot);
         }
+        if (load > maxCapacity) {
+            constexpr int penalty = 1000;
+            totalPenalty += (load - maxCapacity) * penalty;
+        }
+
     }
 
     double fitness = 1.0 / (totalDist + totalPenalty);

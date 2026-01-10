@@ -8,9 +8,22 @@
 
 #include "ConstantValues.h"
 
+static void printGenotype(Individual& ind) {
+    std::cout<<" Genotyp: ";
+    for (auto& g : ind.getGenotype()) {
+        cout<< g << ",";
+    }
+    cout<<endl;
+}
+
 GeneticAlgorithm::GeneticAlgorithm(Evaluator &eval, RandomGenerator& generator, int popSize, double crossProb, double mutProb, int maxIterations) :
 crossProb(crossProb), mutProb(mutProb), maxIterations(maxIterations), bestSolution(nullptr), eval(eval), gen(generator) {
 
+    if (mutProb > 1 || mutProb < 0) {
+    }
+    if (crossProb > 1 || crossProb < 0) {
+
+    }
     if (popSize < MIN_POPSIZE) {
         this->popSize = DEFAULT_POPSIZE;
     } else {
@@ -41,6 +54,8 @@ void GeneticAlgorithm::run() {
         if (bestSolution == nullptr || currentBest.getFitnes() > bestSolution->getFitnes()) {
             delete bestSolution;
             bestSolution = new Individual(currentBest);
+            cout<<"nowy najlepszy " << bestSolution->getFitnes() << endl;
+
         }
 
     }
@@ -63,8 +78,12 @@ void GeneticAlgorithm::crossPopulation() {
             pair<Individual,Individual> crossed = parent1.cross(parent2, gen);
 
             // dodajemy do nowej populacji
+
             newPopulation.push_back(crossed.first);
             newPopulation.push_back(crossed.second);
+
+           // printGenotype(crossed.first);
+            //printGenotype(crossed.second);
         }
     }
 
@@ -145,8 +164,10 @@ void GeneticAlgorithm::calcFitness() {
 void GeneticAlgorithm::printBest() {
     if (bestSolution) {
         std::cout << "Najlepszy znaleziony dystans: " << 1.0 / bestSolution->getFitnes() << std::endl;
+        std::cout<< "size genotypu: " << static_cast<int>(bestSolution->getGenotype().size());
     }
 }
+
 
 
 void GeneticAlgorithm::printDetailedBest() {
