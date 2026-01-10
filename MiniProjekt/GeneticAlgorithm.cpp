@@ -185,10 +185,12 @@ void GeneticAlgorithm::printDetailedBest() {
     std::vector<int> loads(eval.getNumVehicles(), 0);
     bool overallFeasible = true;
 
-    for (size_t i = 0; i < permutation.size(); ++i) {
-        int clientIdx = permutation[i] - 1;
-        int vehicleIdx = genotype[i];
-        loads[vehicleIdx] += demands[clientIdx];
+    for (int p : permutation) {
+        int clientIdx = p - 1;
+        if (clientIdx >= 0 && clientIdx < (int)genotype.size()) {
+            int v = genotype[clientIdx];
+            if (v >= 0 && v < (int)loads.size()) loads[v] += demands[clientIdx];
+        }
     }
 
     std::cout << "\n=== SZCZEGOLOWY RAPORT DOPUSZCZALNOSCI ===" << std::endl;
@@ -206,5 +208,7 @@ void GeneticAlgorithm::printDetailedBest() {
     std::cout << "------------------------------------------" << std::endl;
     std::cout << "STATUS ROZWIAZANIA: " << (overallFeasible ? "DOPUSZCZALNE" : "NIEDOPUSZCZALNE") << std::endl;
     std::cout << "KONCOWY DYSTANS: " << (1.0 / bestSolution->getFitnes()) << std::endl;
+
+    printGenotype(*bestSolution);
 }
 
