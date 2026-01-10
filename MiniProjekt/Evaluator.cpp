@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iostream>
 using namespace std;
 
 #include "ConstantValues.h"
@@ -33,20 +34,19 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
         return Result<void, Error>::fail(new Error("PROBLEM_UNSOLVABLE"));
 
 
-    numVehicles = getNumClients();
+    numVehicles = data.getFleetSize();
+
     return Result<void, Error>::ok();
 }
 
 Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) const {
-    int maxCapacity = data.getCapacityLimit();  // ← POPRAWKA!
+    int maxCapacity = data.getCapacityLimit();
     int depot = data.getDepotNode() - 1;
     int numClients = data.getCustomerCount();
 
     vector<int> demands = data.getDemands();
     vector<int> permutation = data.getVisitOrder();
-    vector<int> loads(numVehicles, 0);
-    vector<double> distances(numVehicles, 0.0);
-    vector<int> lastCustomerOfVehicle(numVehicles, depot);
+
 
     if (genotype.size() != permutation.size())
         return Result<double, Error>::fail(new Error("GENOTYPE_MISMATCH"));

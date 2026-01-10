@@ -44,8 +44,8 @@ void GeneticAlgorithm::run() {
         // krzyzowanie ustawia fitness krzyzowanych na -1
         crossPopulation();
 
-        for (Individual &in: population) {
-            in.mutate(mutProb, gen, eval.getNumVehicles()); // mutacja tez na -1
+        for (size_t j = 1; j < population.size(); j++) {
+            population[j].mutate(mutProb, gen, eval.getNumVehicles());
         }
 
         calcFitness();
@@ -64,6 +64,10 @@ void GeneticAlgorithm::run() {
 
 void GeneticAlgorithm::crossPopulation() {
     vector<Individual> newPopulation;
+
+    if (bestSolution != nullptr) {
+        newPopulation.push_back(*bestSolution);
+    }
 
     while (newPopulation.size() < popSize){
         double prob = gen.nextDouble(0,1);
@@ -120,7 +124,7 @@ Individual& GeneticAlgorithm::selectParents() {
     int bestIdx = gen.nextInt(0, popSize - 1);
 
     int minSize = 2;
-    int optimalSize = 5;
+    int optimalSize = 3;
 
     if (optimalSize > popSize) optimalSize = minSize;
 
