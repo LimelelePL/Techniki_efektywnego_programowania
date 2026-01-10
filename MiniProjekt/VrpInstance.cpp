@@ -22,7 +22,7 @@ void VrpInstance::initialize(int nodes, int cap, int fleet, int depot) {
 double VrpInstance::computeEuclidean(const Coordinate& a, const Coordinate& b) {
     double dx = a.xPos - b.xPos;
     double dy = a.yPos - b.yPos;
-    return (std::sqrt(dx * dx + dy * dy));
+    return std::sqrt(dx * dx + dy * dy);
 }
 
 double VrpInstance::calculateDistance(int i, int j) const {
@@ -39,8 +39,8 @@ void VrpInstance::generateDistanceTable() {
     if (distanceType != "EUC_2D") return;
 
     distanceTable.assign(totalNodes, std::vector<double>(totalNodes, 0.0));
-    for (int i = 0; i < totalNodes; ++i)
-        for (int j = i + 1; j < totalNodes; ++j) {
+    for (int i = 0; i < totalNodes; i++)
+        for (int j = i + 1; j < totalNodes; j++) {
             double d = computeEuclidean(coordinates[i], coordinates[j]);
             distanceTable[i][j] = d;
             distanceTable[j][i] = d;
