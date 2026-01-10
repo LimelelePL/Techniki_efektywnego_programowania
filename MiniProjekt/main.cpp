@@ -46,10 +46,10 @@ int main() {
         return 1;
     }
 
-    int populationSize = 1000;
-    double crossoverProbability = 0.5;
-    double mutationProbability = 0.04;
-    int iterations = 5000;
+    int populationSize = 500;
+    double crossoverProbability = 0.7;
+    double mutationProbability = 0.03;
+    int iterations = 1000;
     RandomGenerator generator;
 
     GeneticAlgorithm ga(evaluator, generator, populationSize, crossoverProbability, mutationProbability, iterations);

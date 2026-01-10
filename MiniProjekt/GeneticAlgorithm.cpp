@@ -172,8 +172,6 @@ void GeneticAlgorithm::printBest() {
     }
 }
 
-
-
 void GeneticAlgorithm::printDetailedBest() {
     if (!bestSolution) return;
 
@@ -186,10 +184,15 @@ void GeneticAlgorithm::printDetailedBest() {
     bool overallFeasible = true;
 
     for (int p : permutation) {
-        int clientIdx = p - 1;
-        if (clientIdx >= 0 && clientIdx < (int)genotype.size()) {
-            int v = genotype[clientIdx];
-            if (v >= 0 && v < (int)loads.size()) loads[v] += demands[clientIdx];
+        if (p == eval.getDepotNode()) continue;
+        int genotypeIdx = p - 2; // MAPOWANIE PO ID
+        int clientDistIdx = p - 1;
+
+        if (genotypeIdx >= 0 && genotypeIdx < (int)genotype.size()) {
+            int vehicleIdx = genotype[genotypeIdx];
+            if (vehicleIdx >= 0 && vehicleIdx < (int)loads.size()) {
+                loads[vehicleIdx] += demands[clientDistIdx];
+            }
         }
     }
 

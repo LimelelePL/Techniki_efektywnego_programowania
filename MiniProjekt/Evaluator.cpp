@@ -41,41 +41,39 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
 
 Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) const {
     int maxCapacity = data.getCapacityLimit();
-    int depot = data.getDepotNode() - 1;
+    int depot = data.getDepotNode() - 1; // Indeks bazy 0
     const vector<int>& demands = data.getDemands();
     const vector<int>& permutation = data.getVisitOrder();
 
     vector<int> loads(numVehicles, 0);
     vector<double> distances(numVehicles, 0.0);
     vector<int> lastPos(numVehicles, depot);
-    vector<bool> vehicleUsed(numVehicles, false);
+    vector<bool> used(numVehicles, false);
 
     for (int p : permutation) {
         if (p == data.getDepotNode()) continue;
-        int client = p - 1;
 
-        if (client < 0 || client >= (int)genotype.size()) continue;
-
-        int v = genotype[client]; // Przypisanie klienta do auta
+        int clientDistIdx = p - 1; // Indeks do tablicy dystansów 0-based
+        int genotypeIdx = p - 2; // po id: Klient nr 2 to gen[0]
+        int v = genotype[genotypeIdx]; // Pobieramy przypisany pojazd
 
         if (v >= 0 && v < numVehicles) {
-            distances[v] += data.calculateDistance(lastPos[v], client);
-            loads[v] += demands[client];
-            lastPos[v] = client;
-            vehicleUsed[v] = true;
+            distances[v] += data.calculateDistance(lastPos[v], clientDistIdx);
+            loads[v] += demands[clientDistIdx];
+            lastPos[v] = clientDistIdx;
+            used[v] = true;
         }
     }
 
     double totalDist = 0;
     long totalPenalty = 0;
     for (int v = 0; v < numVehicles; v++) {
-        if (vehicleUsed[v]) totalDist += distances[v] + data.calculateDistance(lastPos[v], depot);
-        if (loads[v] > maxCapacity) totalPenalty += (loads[v] - maxCapacity) * 1000;
+        if (used[v]) totalDist += distances[v] + data.calculateDistance(lastPos[v], depot);
+        if (loads[v] > maxCapacity) totalPenalty += (loads[v] - maxCapacity) * 100;
     }
 
-    return Result<double, Error>::ok(1.0 / (totalDist + totalPenalty));
+    return Result<double, Error>::ok(1.0 / (totalDist + (double)totalPenalty));
 }
-
 // zwraca false gdy dany demand z pliku bedzie wiekszy od capacity
 bool Evaluator::checkIfProblemIsSolvable() {
     int cap = data.getCapacityLimit();

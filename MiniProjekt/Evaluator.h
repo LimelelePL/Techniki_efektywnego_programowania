@@ -23,6 +23,7 @@ public:
     [[nodiscard]] std::vector<int> getPermutation() const { return data.getVisitOrder();}
 
     [[nodiscard]] int getCapacity() const { return data.getCapacityLimit(); }
+    int getDepotNode() const {return data.getDepotNode(); }
 
 
 private:
